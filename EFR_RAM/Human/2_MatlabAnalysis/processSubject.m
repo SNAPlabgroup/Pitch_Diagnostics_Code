@@ -9,10 +9,12 @@ close all
 clear;
 
 condition = 'YNH';
-subj = 'S362';
+subj = 'S360';
 fmod = 223;
 harmonics = 4;
 
+t_win = [.2,.9]; %signal window, ignoring onset/offset effects
+filts = [60,4000];
 %% Handles my Local File Structure/EXT drive
 
 uname = 'sivaprakasaman';
@@ -30,8 +32,12 @@ cd(cwd);
 %% Data analysis & plotting:
 fs = double(fs);
 
-pos = all_epochs_pos'*1e6; %+ polarity
-neg = all_epochs_neg'*1e6; %- polarity
+frames_shift = round((t_win-min(time))*fs); %shift past baseline period in MNE
+
+pos = all_epochs_pos(:,frames_shift(1):frames_shift(2))'*1e6; %+ polarity
+neg = all_epochs_neg(:,frames_shift(1):frames_shift(2))'*1e6; %- polarity
+
+t = t_win(1):1/fs:t_win(2);
 %% Get PLV spectra/Time domain waveform:
 
 %params for random sampling with replacement
@@ -40,7 +46,7 @@ k_iters = 30;
 
 %only output things we want to look at
 [f, ~, ~, PLV_env, ~, ~, T_env] = helper.getSpectAverage(pos,neg, fs, subset, k_iters);
-t = (1:length(T_env))/fs;
+% t = (1:length(T_env))/fs;
 
 %% Get Peaks
 
@@ -53,7 +59,7 @@ figure;
 
 %Spectral Domain
 hold on;
-title([subj,' | RAM - 25% Duty Cycle'],'FontSize',14);
+title([subj,' | RAM - 25% Duty Cycle | ',condition],'FontSize',14);
 plot(f,PLV_env,'Color',blck,'linewidth',1.5);
 plot(LOCS,PKS,'*','Color',rd,'MarkerSize',10,'LineWidth',2);
 
@@ -83,5 +89,7 @@ set(gcf,'Position',[1557 538 560 420])
 
 %% Export:
 cd(datapath);
-print(gcf,[subj,'_RAM_efr_human',condition,'_figure'],'-dpng','-r300');
-cd(cwd)
+fname = [subj,'_RAM_efr_human_',condition];
+print(gcf,[fname,'_figure'],'-dpng','-r300');
+save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
+cd(cwd);
