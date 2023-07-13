@@ -9,8 +9,8 @@ close all
 clear;
 
 condition = 'YNH';
-subj = 'S360';
-fmod = 223;
+subj = 'S353';
+fmod = 103;
 harmonics = 4;
 
 t_win = [.2,.9]; %signal window, ignoring onset/offset effects
@@ -25,7 +25,7 @@ datapath = [prefix,suffix];
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,'*preProcessed.mat')).name};
+datafile = {dir(fullfile(cd,['*',num2str(fmod),'*preProcessed.mat'])).name};
 load(datafile{1});
 fname_out = [datafile{1}(1:end-4),'_matlab.mat'];
 cd(cwd);
@@ -59,7 +59,7 @@ figure;
 
 %Spectral Domain
 hold on;
-title([subj,' | RAM - 25% Duty Cycle | ',condition],'FontSize',14);
+title([subj,' | RAM - 25% Duty Cycle | F_{mod}',num2str(fmod),'|',condition],'FontSize',14);
 plot(f,PLV_env,'Color',blck,'linewidth',1.5);
 plot(LOCS,PKS,'*','Color',rd,'MarkerSize',10,'LineWidth',2);
 
@@ -89,7 +89,7 @@ set(gcf,'Position',[1557 538 560 420])
 
 %% Export:
 cd(datapath);
-fname = [subj,'_RAM_efr_human_',condition];
+fname = [subj,'_RAM_',num2str(fmod),'_efr_human_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
 cd(cwd);
