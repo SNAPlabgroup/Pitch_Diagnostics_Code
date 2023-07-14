@@ -9,8 +9,8 @@ close all
 clear;
 
 condition = 'YNH';
-subj = 'S353';
-fmod = 103;
+subj = 'S362';
+fmod = 223;
 harmonics = 4;
 
 t_win = [.2,.9]; %signal window, ignoring onset/offset effects
