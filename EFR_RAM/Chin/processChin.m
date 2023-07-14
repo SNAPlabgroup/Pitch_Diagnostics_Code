@@ -47,7 +47,7 @@ all_dat = resample(all_dat,fs,round(fs_orig));
 all_dat = all_dat(frames(1):frames(2),:);
 
 pos = all_dat(:,1:2:end)*1e6/data.AD_Data.Gain; %+ polarity
-neg = all_dat(:,1:2:end)*1e6/data.AD_Data.Gain; %- polarity
+neg = all_dat(:,2:2:end)*1e6/data.AD_Data.Gain; %- polarity
 
 %% Get PLV spectra/Time domain waveform:
 
