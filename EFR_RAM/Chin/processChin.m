@@ -3,14 +3,10 @@
 %Purpose: Script to import/plot/apply additional processing to RAM_EFR
 %files (chin version)
 
-%TODO: 
-% - resample and truncate!
+%Helpful Info: Be sure to define datapath so Import data section works. 
+%see my example setup_AS file.   
 
-close all
-clear;
 
-condition = 'Baseline';
-subj = 'Q421';
 fmod = 103;
 harmonics = 16;
 
@@ -21,11 +17,6 @@ frames = round(t_win*fs);
 
 %% Handles my Local File Structure/EXT drive
 
-uname = 'sivaprakasaman';
-prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Chin/'];
-suffix = [condition,'/',subj];
-
-datapath = [prefix,suffix];
 %% Import data
 cwd = pwd;
 cd(datapath)

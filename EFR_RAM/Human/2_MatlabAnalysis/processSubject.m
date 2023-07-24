@@ -2,25 +2,14 @@
 %Updated: July, 2023
 %Purpose: Script to import/plot/apply additional processing to RAM_EFR
 %files
+%Helpful Info: Be sure to define datapath so Import data section works. 
+%see my example setup_AS file.   
 
-%TODO: pass time bounds thru
-
-close all
-clear;
-
-condition = 'YNH';
-subj = 'S362';
 fmod = 223;
 harmonics = 4;
 
 t_win = [.2,.9]; %signal window, ignoring onset/offset effects
 filts = [60,4000];
-%% Handles my Local File Structure/EXT drive
-
-uname = 'sivaprakasaman';
-prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/'];
-suffix = [condition,'/',subj,'/Preprocessed'];
-datapath = [prefix,suffix];
 
 %% Import data
 cwd = pwd;
