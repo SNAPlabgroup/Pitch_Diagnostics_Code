@@ -4,10 +4,10 @@
 close all;
 clear;
 
-uname = 'asivapr';
+uname = 'sivaprakasaman';
 
 condition = 'YNH';
-subj = 'S360';
+subj = 'S363';
 
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/'];
 suffix = [condition,'/',subj,'/Preprocessed'];

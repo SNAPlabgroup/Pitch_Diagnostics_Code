@@ -5,7 +5,7 @@
 %Helpful Info: Be sure to define datapath so Import data section works. 
 %see my example setup_AS file.   
 
-fmod = 223;
+fmod = 103;
 harmonics = 4;
 
 t_win = [.2,.9]; %signal window, ignoring onset/offset effects

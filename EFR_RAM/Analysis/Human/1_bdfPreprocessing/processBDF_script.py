@@ -4,7 +4,7 @@
 Created on Sun Jul 30 11:13:02 2023
 
 @author: samhauser
-Converting AS jupyter notebook to regular script. 
+Converting AS jupyter notebook to regular script.
 """
 
 import os
@@ -16,7 +16,7 @@ cond = 'YNH';
 fmod = 223;
 EFR = 1; #change to 1 if you want to look at EFRs
 
-isAndrew = 0;
+isAndrew = 1;
 local = 0;
 
 if isAndrew:
@@ -26,14 +26,14 @@ if isAndrew:
 
     else:
         #Ext Drive
-        measure_dir = '/media/asivapr/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/';
+        measure_dir = '/media/sivaprakasaman/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/';
 else:
     measure_dir = '/Users/samhauser/Library/CloudStorage/Box-Box/SNAPlab Data Archive/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/';
     # print('please define your own data_dir and out_loc');
     sys.path.append('/Users/samhauser/Desktop/Code/mne-python/')
     sys.path.append('/Users/samhauser/Desktop/Code/ANLffr/')
 
-## Start 
+## Start
 import mne
 from anlffr.helper import biosemi2mne as bs
 from matplotlib import pyplot as plt
@@ -47,8 +47,8 @@ plt.rcParams['figure.dpi']  = 120
 from bdf_preproc import poolBDF
 pwd = os.getcwd();
 
-trialID = '*RAM*'; # + str(fmod) +'*';
-    
+trialID = '*RAM*' + str(fmod) +'*';
+
 data_dir = measure_dir+cond+'/'+subj;
 out_loc = data_dir + '/Preprocessed';
 
@@ -70,7 +70,7 @@ fname = subj+'_RAM_' + str(fmod) +'_EFR_preProcessed.mat';
 try:
     os.mkdir('Preprocessed')
 except OSError as error:
-    print('Directory Present') 
+    print('Directory Present')
 
 os.chdir(pwd);
 
@@ -91,7 +91,7 @@ if not EFR:
 
     blink_proj = compute_proj_epochs(epochs_blinks, n_eeg=1)
     raw.add_proj(blink_proj)
-    
+
 tbounds = [-0.2,1.2];
 bsline = (-.2,0);
 
@@ -115,7 +115,7 @@ if EFR:
     chans2pick = mne.pick_channels(chan_names,efr_chans);
 else:
     chans2pick = mne.pick_channels(chan_names,cort_chans);
-    
+
 all_epochs_mean_cap = epochs_p.get_data();
 all_epochs_mean_cap = all_epochs_mean_cap[:,chans2pick,:];
 all_epochs_mean_p = np.mean(all_epochs_mean_cap,1);
@@ -177,18 +177,18 @@ comb.plot(picks = chans2pick);
 
 comb_export = comb.get_data(picks = chans2pick);
 
-topo_fig = plt.figure();
-topo_fig.clear();
+# topo_fig = plt.figure();
+# topo_fig.clear();
 # plt.rcParams.update({'figure.figsize': (4,4)})
 # plt.rcParams.update({'lines.linewidth': 1})
 topo_fig = plt.figure(dpi = 300)
 ax = plt.gca();
 # topo_fig = erp_up.plot_topo(ylim = dict(eeg=[-4,4]),legend=False, axes = ax,title = 'ACCs', color = 'purple');
 topo_fig = comb.plot_topo(ylim = dict(eeg=[-2,2.]),legend=False, axes = ax, title = 'ACCs', color = 'black');
-topo_fig.show()
+# topo_fig.show()
 plt.show()
 
-import scipy.io 
+import scipy.io
 
 os.chdir(out_loc);
 scipy.io.savemat(fname, {'time':t_vect,'fs':fs_new,'filt_band':filtband,'mean_p_cap':cap_p, 'std_p_cap':cap_p_std_err,
