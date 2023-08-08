@@ -5,7 +5,8 @@ close all;
 clear;
 
 condition = 'Baseline';
-subj = 'Q421';
+subj = 'Q427';
+fmod = 103;
 
 uname = 'asivapr';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Chin/'];

@@ -7,7 +7,6 @@
 %see my example setup_AS file.   
 
 
-fmod = 103;
 harmonics = 16;
 
 fs = 8e3; %fs to resample to
@@ -28,8 +27,14 @@ cd(cwd);
 fs_orig = data.Stimuli.RPsamprate_Hz;
 fs = 8e3; %resample to 8kHz
 
-all_dat = cell2mat(data.AD_Data.AD_All_V');
-all_dat = all_dat';
+
+
+if size(data.AD_Data.AD_All_V,2)==1 || size(data.AD_Data.AD_All_V,2)==2
+    all_dat = cell2mat(data.AD_Data.AD_All_V{1}');
+else
+    all_dat = cell2mat(data.AD_Data.AD_All_V');
+end
+    all_dat = all_dat';
 
 [b,a] = butter(4,filts./(fs_orig/2));
 all_dat = filtfilt(b,a,all_dat);
