@@ -11,7 +11,7 @@ import os
 import sys
 import warnings
 
-subj = 'S363';
+subj = 'S360';
 cond = 'YNH';
 fmod = 103;
 EFR = 1; #change to 1 if you want to look at EFRs

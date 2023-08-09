@@ -7,7 +7,7 @@ clear;
 uname = 'samhauser';
 
 condition = 'YNH';
-subj = 'S363';
+subj = 'S360';
 
 prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/EFR_RAM/Human/'];
 suffix = [condition,'/',subj,'/Preprocessed'];
