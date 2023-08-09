@@ -11,12 +11,12 @@ import os
 import sys
 import warnings
 
-subj = 'S360';
+subj = 'S363';
 cond = 'YNH';
-fmod = 223;
+fmod = 103;
 EFR = 1; #change to 1 if you want to look at EFRs
 
-isAndrew = 1;
+isAndrew = 0;
 local = 0;
 
 if isAndrew:
@@ -28,7 +28,7 @@ if isAndrew:
         #Ext Drive
         measure_dir = '/media/sivaprakasaman/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/';
 else:
-    measure_dir = '/Users/samhauser/Library/CloudStorage/Box-Box/SNAPlab Data Archive/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/';
+    measure_dir = '/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/EFR_RAM/Human/';
     # print('please define your own data_dir and out_loc');
     sys.path.append('/Users/samhauser/Desktop/Code/mne-python/')
     sys.path.append('/Users/samhauser/Desktop/Code/ANLffr/')

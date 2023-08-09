@@ -7,9 +7,9 @@ clear;
 uname = 'samhauser';
 
 condition = 'YNH';
-subj = 'S362';
+subj = 'S363';
 
-prefix = ['/Volume/SNH/THESIS/Pitch_Diagnostics_SH_AS/EFR_RAM/Human/'];
+prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/EFR_RAM/Human/'];
 suffix = [condition,'/',subj,'/Preprocessed'];
 datapath = [prefix,suffix];
 
