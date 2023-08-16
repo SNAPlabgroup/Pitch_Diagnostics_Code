@@ -6,12 +6,20 @@
 close all;
 clear;
 
-subj = 'S361';
+subj = 'S360';
 condition = 'YNH';
+location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
-prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/DPOAEswept/Human/'];
-suffix = [condition,'/',subj];
+
+if location == 1 % School
+    prefix = 'F:\';
+elseif location == 0 % Mac
+    prefix = ['/Volumes/SNH/'];
+end 
+
+suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep,...
+    'DPOAEswept', filesep, 'Human', filesep, condition,filesep,subj];
 datapath = [prefix,suffix];
 
 DPanalysis;

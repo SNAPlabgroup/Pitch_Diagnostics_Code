@@ -1,6 +1,6 @@
 %% Get Data from SNAP lab computer
 
-subj = 'S353';
+subj = 'S343';
 condition = 'YNH';
 user = 'SH';
 

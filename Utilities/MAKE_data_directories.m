@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Enter info about new subject(s)
-subj = 'S353';
+subj = 'S343';
 status = 'YNH';
 user = 'SH';
 location = 2; % 0==laptop/mac; 1==work
