@@ -1,15 +1,17 @@
 % Organize chin files
 
-subj = 'Q426';
-gender = 'M';
+subj = 'Q421';
+gender = 'F';
 condition = 'Baseline';
 user = 'SH';
 loc = 1; 
 
 
 %% Run
-if loc == 1
-prefix = ['F:\'];
+if strcmp(user, 'SH')
+    if loc == 1
+        prefix = ['F:\'];
+    end
 % else
     % Andrew directories here
 end
