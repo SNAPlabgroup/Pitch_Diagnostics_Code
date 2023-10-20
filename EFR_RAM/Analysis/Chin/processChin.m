@@ -6,8 +6,8 @@
 %Helpful Info: Be sure to define datapath so Import data section works. 
 %see my example setup_AS file.   
 
-
-fmod = 103;
+fmod = 223;
+file = 'p*RAM_223*.mat'; 
 harmonics = 16;
 
 fs = 8e3; %fs to resample to
@@ -20,7 +20,7 @@ frames = round(t_win*fs);
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,'p*RAM*.mat')).name};
+datafile = {dir(fullfile(cd, file)).name};
 load(datafile{1});
 fname_out = [datafile{1}(1:end-4),'_matlab.mat'];
 cd(cwd);
@@ -28,7 +28,7 @@ cd(cwd);
 fs_orig = data.Stimuli.RPsamprate_Hz;
 fs = 8e3; %resample to 8kHz
 
-all_dat = cell2mat(data.AD_Data.AD_All_V');
+all_dat = cell2mat(data.AD_Data.AD_All_V{1,1}');
 all_dat = all_dat';
 
 [b,a] = butter(4,filts./(fs_orig/2));
@@ -99,7 +99,7 @@ if ~exist(data_out,'dir')
 end
 
 cd(data_out);
-fname = [subj,'_RAM_efr_chin_',condition];
+fname = [subj,'_RAM_efr_chin_',fmod, '_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
 cd(cwd)
