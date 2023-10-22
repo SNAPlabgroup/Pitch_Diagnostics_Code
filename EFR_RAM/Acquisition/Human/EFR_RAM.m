@@ -17,7 +17,7 @@ try
     
     % Experiment parameters
     ntrials = 500; % This is per polarity. We typically want about 3-500.
-    levels = [80]; % Could be a list the way code is written
+    levels = 80; % Could be a list the way code is written
     isi = 0.2; % Average interstimulus interval (only approx guarenteed)
     
     % Some cushion for time taken to write each trial to buffer
@@ -49,18 +49,20 @@ try
     
     fs = 48828.125; % Sampling rate
     duration = 1.0; % Second
-    fm = 223; % Modulation frequency
+    %     fm = 103; % Modulation frequency
+    fm = 223;
     fc = 4000; % Carrier frequency
+    duty = 25;
     
     t = 0:(1/fs):(duration - 1/fs);
     carr = sin(2*pi*fc*t);
     
-    mod = (square(2*pi*fm*t, 25) + 1)/2;
+    mod = (square(2*pi*fm*t, duty) + 1)/2;
     signal = (mod .* carr)*0.1;
     
-    SNR = 0; % dB ... not using here. y = signal only
-    signal_rms = rms(signal);
-    noise = randn(size(signal));
+    %     SNR = 0; % dB ... not using here. y = signal only
+    %     signal_rms = rms(signal);
+    %     noise = randn(size(signal));
     % y = (signal + db2mag(-SNR)*signal_rms*noise/rms(noise));
     y = signal;
     
@@ -151,7 +153,7 @@ try
         
     end
     
-    toc(tstart); % Just to help get a sense of how long things really take
+    testdur = toc(tstart); % Just to help get a sense of how long things really take
     
     %Clearing I/O memory buffers:
     invoke(RZ,'ZeroTag','datainL');
@@ -165,6 +167,45 @@ try
     invoke(RZ, 'SoftTrg', 6);
     close_play_circuit(f1RZ,RZ);
     fprintf(1,'\n Done with data collection!\n');
+    
+    %% Relevant Data to Save
+    % Subject Data
+    load('C:\Experiments\Sam\current_visit.mat', 'visit')
+    ask = questdlg(sprintf('Is this subject %s?', visit.subj.ID), 'Check Subject', 'Yes', 'No', 'No');
+    switch ask
+        case 'No'
+            cd ..
+            startVisit
+            cd EFR
+    end
+    
+    info = visit;
+    % Get date/time
+    datetag = datestr(clock);
+    info.date = datetag;
+    datetag(strfind(datetag,' ')) = '_';
+    datetag(strfind(datetag,':')) = '-';
+    
+    % Stimulus info
+    stim.stimulus = 'RAM';
+    stim.isi = isi;
+    stim.stimDur_s = duration;
+    stim.fm_hz = fm;
+    stim.jitter = jitter;
+    stim.levels = levels;
+    stim.ntrials = ntrials;
+    stim.fc_hz = fc;
+    stim.dutycycle = duty;
+    resp.testdur_s = testdur;
+    
+    data.info = info;
+    data.stim = stim;
+    data.resp = resp;
+    
+    filename = ['./RESULTS/' 'EFR_RAM_' visit.subj.ID '_' datetag];
+    save(filename, 'data')
+    fprintf(1,'\n Saved metadata!\n');
+    
     
 catch me
     close_play_circuit(f1RZ,RZ);
