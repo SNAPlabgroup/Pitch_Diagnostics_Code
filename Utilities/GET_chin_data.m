@@ -1,7 +1,7 @@
 % Organize chin files
 
-subj = 'Q421';
-gender = 'F';
+subj = 'Q428';
+gender = 'M';
 condition = 'Baseline';
 user = 'SH';
 loc = 1; 
@@ -16,7 +16,7 @@ if strcmp(user, 'SH')
     % Andrew directories here
 end
 
-suffix = ['THESIS' filesep 'Pitch_Diagnostics_Data' filesep '_RawChinData']; 
+suffix = ['THESIS\Pitch_Diagnostics_Data\_RawChinData']; 
 
 alldatadir = [prefix suffix]; 
 

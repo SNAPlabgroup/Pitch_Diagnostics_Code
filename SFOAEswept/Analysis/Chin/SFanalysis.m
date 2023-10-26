@@ -10,7 +10,7 @@
 %%% Set these parameters %%%%%%%%%%%%%
 
 windowdur = 0.040; % 40ms in paper
-offsetwin = 0.0; % 20ms in paper
+offsetwin = 0.01; % 20ms in paper
 npoints = 512;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,8 +26,8 @@ load(datafile{1});
 fname_out = [subj '_SFOAEswept_' datafile{1}(20:end-4) '.mat'];
 
 
-stim = x.sweptSFOAEData.stim;
-clear x; 
+stim = data.stim;
+
 
 %% IMPORT CALIB DATA
 cd(calibpath)

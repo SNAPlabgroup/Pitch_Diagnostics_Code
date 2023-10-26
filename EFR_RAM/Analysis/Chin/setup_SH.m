@@ -5,11 +5,16 @@ close all;
 clear;
 
 condition = 'Baseline';
-subj = 'Q422';
+subj = 'Q425';
+loc = 1; 
 
+if loc == 1
+    prefix = ['F:/']; 
+elseif loc == 2
+    prefix = ['/Volumes/SNH/']; 
+end
 
-prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/EFR_RAM/Chin/'];
-suffix = [condition,'/',subj];
+suffix = ['THESIS/Pitch_Diagnostics_Data/EFR_RAM/Chin/' condition,'/',subj];
 datapath = [prefix,suffix];
 
 

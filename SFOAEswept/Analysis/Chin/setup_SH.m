@@ -6,19 +6,19 @@
 close all;
 clear;
 
-subj = 'Q428';
+subj = 'Q425';
 condition = 'Baseline';
-location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
+location = 1; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
 
 if location == 1 % School
     prefix = 'F:\';
 elseif location == 0 % Mac
-    prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/'];
+    prefix = ['/Volumes/SNH/'];
 end 
 
-suffix = ['SFOAEswept', filesep, 'Chin', filesep, condition,filesep,subj];
+suffix = ['THESIS/Pitch_Diagnostics_Data/SFOAEswept', filesep, 'Chin', filesep, condition,filesep,subj];
 datapath = [prefix,suffix];
 
 suffix_calib = ['FPLcalib', filesep, 'Chin', filesep, condition, filesep, subj];
