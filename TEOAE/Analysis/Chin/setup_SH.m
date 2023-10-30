@@ -3,15 +3,22 @@
 %Here's where you can define your own parameters for input/output
 %directories.
 
-close all;
+
 clear;
 
-subj = 'Q428';
+subj = 'Q431';
 condition = 'Baseline';
+location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
-prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/TEOAE/Chin/'];
-suffix = [condition,'/',subj];
-datapath = [prefix,suffix];
+
+if location == 1 % School
+    prefix = 'F:\';
+elseif location == 0 % Mac
+    prefix = ['/Volumes/SNH/'];
+end 
+
+suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'TEOAE', filesep, 'Chin', filesep, condition, filesep, subj];
+datapath = [prefix,suffix]; 
 
 TEOAE_Analysis;

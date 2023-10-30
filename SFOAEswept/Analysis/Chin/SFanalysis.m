@@ -1,16 +1,15 @@
 % SFOAE swept Analysis
 % Author: Samantha Hauser
 % Created: May 2023
-% Last Updated: August 1, 2023
+% Last Updated: October 27, 2023
 % Purpose:
-% Helpful info:
-
-
+% Helpful info: Need to add Qerb calculation and consider eliminating long
+% components (w/ IFFT method)
 
 %%% Set these parameters %%%%%%%%%%%%%
 
-windowdur = 0.040; % 40ms in paper
-offsetwin = 0.01; % 20ms in paper
+windowdur = 0.038; % 40ms in paper
+offsetwin = 0.00; % 20ms in paper
 npoints = 512;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,32 +17,36 @@ npoints = 512;
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,['*sweptSFOAE.mat'])).name};
-if length(datafile) > 1
-    fprintf('More than 1 data file. Check this is correct file!\n'); 
+datafile = dir(fullfile(cd,['sweptSFOAE_*.mat']));
+if length(datafile) < 1
+    fprintf('No file...Quitting!\n');
+elseif size(datafile,1) > 1
+    checkDIR =uigetfile('.mat');
+    load(checkDIR);
+    file = checkDIR; 
+else
+    load(datafile(1).name);
+    file = datafile(1).name; 
 end
-load(datafile{1});
-fname_out = [subj '_SFOAEswept_' datafile{1}(20:end-4) '.mat'];
-
 
 stim = data.stim;
 
-
-%% IMPORT CALIB DATA
-cd(calibpath)
-calibfile = {dir(fullfile(cd,['*_calib_FPL_raw.mat'])).name};
-if length(calibfile) > 1
-    calibfile = uigetfile('*_calib_FPL_raw.mat'); 
-    load(calibfile); 
-elseif isempty(calibfile)
-    fprintf('No calib file...quitting!\n'); 
-else
-    load(calibfile{1});
-end
-
-res.calib = x.FPLearData; 
+% SET CALIB FILE HERE
+calib = data.FPL.FPLearData;
+res.calib = calib; 
 
 cd(cwd);
+
+if ~isfield(stim, 'scale')
+    stim.scale = 'log';
+    stim.nearfreqs = [1.1,1.12, 1.14,1.16];
+end
+
+figure; plot(stim.SuppBuffs(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
+text(128, .1, '128'); text(247, .1, '247')
+ask_delay = inputdlg('extra delay?');  % 247; %128
+delay_oops = str2double(ask_delay{1}); 
+
 
 %% Set variables needed from stim.
 phiProbe_inst = 2*pi*stim.phiProbe_inst;
@@ -59,16 +62,16 @@ else
 end
 
 % set freq we're testing and the timepoints when they happen.
-if abs(stim.speed) < 20 %linear sweep
+if strcmp(stim.scale, 'log')    %linear sweep
     testfreq = 2 .^ linspace(log2(f1), log2(f2), npoints);
     t_freq = log2(testfreq/f1)/stim.speed + stim.buffdur;
-else % log sweep
+else
     testfreq = linspace(f1, f2, npoints);
     t_freq = (testfreq-f1)/stim.speed + stim.buffdur;
 end
 
 %duration changes w/ frequency
-durs = .038*(2.^(-0.3*t_freq)-1)/ (-0.3*log(2)) + 0.038;
+durs = .038*(2.^(-0.3*(t_freq-stim.buffdur))-1)/ (-0.3*log(2)) + 0.038;
 
 %% Artifact rejection
 
@@ -120,38 +123,16 @@ for j = 1:trials
     end
 end
 
+SFOAE = mean(resp_AR, 'omitNaN'); % mean SFOAE after artifact rejection
 
-%% Calculate the Noise Floor (two ways)
-numOfTrials = floor(trials/2)*2; % need even number of trials
-% first method, subtraction
-for y = 1:2:numOfTrials
-    pos_SF(ceil(y/2),:) = resp_AR(y,:);
-    neg_SF(ceil(y/2),:) = resp_AR(y+1,:);
-end
-
-numTrials2 = floor(numOfTrials/4).*2;
-pos_noise = zeros(numTrials2/2, size(pos_SF,2));
-neg_noise = zeros(numTrials2/2, size(pos_SF,2));
-for x = 1:2:numTrials2
-    pos_noise(ceil(x/2),:) = (pos_SF(x, :) - pos_SF(x+1, :)) / 2;
-    neg_noise(ceil(x/2),:) = (neg_SF(x, :) - neg_SF(x+1, :)) / 2;
-end
-
-noise = [pos_noise; neg_noise];
-
-SFOAE = mean(resp_AR, "omitNaN"); % mean SFOAE after artifact rejection
-NOISE = mean(noise, "omitNaN"); % mean SFOAE after artifact rejection
-
+nfreqs = stim.nearfreqs; 
 %% LSF Analysis
 
 % Set empty matricies for next steps
 maxoffset = ceil(stim.Fs * offsetwin);
 coeffs = zeros(npoints, 2);
-coeffs_n = zeros(npoints, 2);
 tau = zeros(npoints, 1);
 coeffs_noise = zeros(npoints,8);
-
-durs = .038*(2.^(-0.3*t_freq)-1)/ (-0.3*log(2)) + 0.038;
 
 % Generate model of chirp and test against response
 for k = 1:npoints
@@ -168,28 +149,24 @@ for k = 1:npoints
         -sin(phiProbe_inst(win)) .* taper];
     
     % nearby frequencies for nf calculation
-    
-    model_noise = [cos(1.1*phiProbe_inst(win)) .* taper;
-        -sin(1.1*phiProbe_inst(win)) .* taper;
-        cos(1.12*phiProbe_inst(win)) .* taper;
-        -sin(1.12*phiProbe_inst(win)) .* taper;
-        cos(1.14*phiProbe_inst(win)) .* taper;
-        -sin(1.14*phiProbe_inst(win)) .* taper;
-        cos(1.16*phiProbe_inst(win)) .* taper;
-        -sin(1.16*phiProbe_inst(win)) .* taper];
+    model_noise = [cos(nfreqs(1)*phiProbe_inst(win)) .* taper;
+        -sin(nfreqs(1)*phiProbe_inst(win)) .* taper;
+        cos(nfreqs(2)*phiProbe_inst(win)) .* taper;
+        -sin(nfreqs(2)*phiProbe_inst(win)) .* taper;
+        cos(nfreqs(3)*phiProbe_inst(win)) .* taper;
+        -sin(nfreqs(3)*phiProbe_inst(win)) .* taper;
+        cos(nfreqs(4)*phiProbe_inst(win)) .* taper;
+        -sin(nfreqs(4)*phiProbe_inst(win)) .* taper];
     
     % zero out variables for offset calc
     coeff = zeros(maxoffset, 2);
-    coeff_n = zeros(maxoffset, 2);
     resid = zeros(maxoffset, 1);
     coeff_noise = zeros(maxoffset, 8);
     
     for offset = 0:maxoffset
         resp = SFOAE(win+offset) .* taper;
-        resp_n = NOISE(win+offset) .* taper;
         
         coeff(offset + 1, :) = model' \ resp';
-        coeff_n(offset + 1, :) = model' \ resp_n';
         coeff_noise(offset +1, :) = model_noise' \ resp';
         
         resid(offset +1) = sum( (resp - coeff(offset+1, :) * model).^2);
@@ -198,7 +175,6 @@ for k = 1:npoints
     [~, ind] = min(resid);
     
     coeffs(k, :) = coeff(ind, :);
-    coeffs_n(k, :) = coeff_n(ind, :);
     coeffs_noise(k,:) = coeff_noise(ind,:);
     
     tau(k) = (ind - 1) * (1/stim.Fs); % delay in sec
@@ -208,8 +184,6 @@ end
 %% Amplitude and delay calculations
 a = coeffs(:, 1);
 b = coeffs(:, 2);
-a_n = coeffs_n(:, 1); % subtraction nf
-b_n = coeffs_n(:, 2);
 
 phi = tau.*testfreq'; % cycles (from delay/offset)
 phasor = exp(-1j * phi* 2 * pi);
@@ -221,11 +195,28 @@ for i = 1:2:8
 end
 
 oae_complex = complex(a, b).*phasor;
-noise_complex2 = complex(a_n, b_n);
 noise_complex = mean(noise2,2);
 res.multiplier = stim.VoltageToPascal.* stim.PascalToLinearSPL;
 
-%% Plot resulting figure
+%% Windowing
+% Can use IFFT method from Hari's additon to early DPOAE code
+% use energy between 0.5 and 1.5 ms
+
+
+
+%% Qerb
+
+theta = unwrap(angle(oae_complex))/(2*pi); % cycles
+tau_pg = -diff(theta)./diff((testfreq')); %sec
+x = (testfreq(2:end) + testfreq(1:end-1))/2; 
+Nsf = x' .* (tau_pg);
+r = 1.25; % not exact
+Qerb = Nsf .* r; 
+
+
+
+
+%% Plot resulting figure (in SPL)
 figure;
 plot(testfreq/1000, db(abs(oae_complex).*res.multiplier), 'linew', 1.75);
 hold on;
@@ -240,27 +231,16 @@ legend('SFOAE', 'NF')
 
 %% Get EPL units
 [SF] = calc_EPL(testfreq, oae_complex.*res.multiplier, res.calib, 1);
-res.complex.dp_epl = SF.P_epl;
+res.complex.sf_epl = SF.P_epl;
 res.f_epl = SF.f;
 res.dbEPL_sf = db(abs(SF.P_epl));
 
 [NF] = calc_EPL(testfreq, noise_complex.*res.multiplier, res.calib, 1);
 res.complex.nf_epl = NF.P_epl;
-res.f_epl = NF.f;
+res.f = NF.f;
 res.dbEPL_nf = db(abs(NF.P_epl));
 
-%                 [F1] = calc_FPL(res.f.f1, res.complex_f1, res.calib.Ph1);
-%                 res.complex_f1_fpl = F1.P_fpl;
-%                 res.f1_fpl = F1.f;
-%                 if exist('res.calib.Ph2', 'var')
-%                     [F2] = calc_FPL(res.f.f2, res.complex_f2, res.calib.Ph2);
-%                 else
-%                     [F2] = calc_FPL(res.f.f2, res.complex_f2, res.calib.Ph1);
-%                 end
-%                 res.complex_f2_fpl = F2.P_fpl;
-%                 res.f2_fpl = F2.f;
-
-% plot figure again
+%% Plot figure again (in EPL)
 figure;
 plot(testfreq/1000, res.dbEPL_sf, 'linew', 3, 'Color', '#4575b4');
 hold on;
@@ -274,30 +254,83 @@ ylabel('Amplitude (dB EPL)', 'FontWeight', 'bold')
 xlabel('F2 Frequency (kHz)', 'FontWeight', 'bold')
 legend('SFOAE', 'NF')
 drawnow;
+
+%% Summary Points of OAE amplitude
+dpoae_full = res.dbEPL_sf;
+dpnf_full = res.dbEPL_nf;
+f2 = res.f/1000;
+
+% SEt params
+fmin = 0.5;
+fmax = 16;
+edges = 2 .^ linspace(log2(fmin), log2(fmax), 21);
+bandEdges = edges(2:2:end-1);
+centerFreqs = edges(3:2:end-2);
+
+dpoae = zeros(length(centerFreqs),1);
+dpnf = zeros(length(centerFreqs),1);
+dpoae_w = zeros(length(centerFreqs),1);
+dpnf_w = zeros(length(centerFreqs),1);
+% resample / average to 9 center frequencies
+for z = 1:length(centerFreqs)
+    band = find( f2 >= bandEdges(z) & f2 < bandEdges(z+1));
+    
+    % Do some weighting by SNR
+    
+    % TO DO: NF from which SNR was calculated included median of 7 points
+    % nearest the target frequency.
+    SNR = dpoae_full(band) - dpnf_full(band);
+    weight = (10.^(SNR./10)).^2;
+    
+    dpoae(z, 1) = mean(dpoae_full(band));
+    dpnf(z,1) = mean(dpnf_full(band));
+    
+    dpoae_w(z,1) = sum(weight.*dpoae_full(band))/sum(weight);
+    dpnf_w(z,1) = sum(weight.*dpnf_full(band))/sum(weight);
+    
+end
+
+
+figure;
+hold on;
+semilogx(f2, dpoae_full, 'Color', [.8, .8, .8], 'linew', 2)
+semilogx(f2, dpnf_full, '--', 'linew', 1.5, 'Color', [.8, .8, .8])
+semilogx(centerFreqs, dpoae_w, 'o', 'linew', 4, 'MarkerSize', 10, 'MarkerFaceColor', '#d73027', 'MarkerEdgeColor', '#d73027')
+set(gca, 'XScale', 'log', 'FontSize', 14)
+xlim([.5, 16])
+ylim([-50, 50])
+xticks([.5, 1, 2, 4, 8, 16])
+ylabel('Amplitude (dB EPL)', 'FontWeight', 'bold')
+xlabel('Frequency (kHz)', 'FontWeight', 'bold')
+
+result.f = f2; 
+result.oae_full = dpoae_full; 
+result.nf_full = dpnf_full; 
+result.centerFreqs = centerFreqs; 
+result.oae_summary = dpoae_w; 
+ 
 %% Save result function
 res.windowdur = windowdur;
 res.offsetwin = offsetwin;
 res.npoints = npoints;
 res.avgSFOAEresp = SFOAE;   % average mic response
-res.avgNOISEresp = NOISE;
 res.t_freq = t_freq;
 res.f = testfreq;           % frequency vectors
 res.a = a;                  % coefficients
 res.b = b;
-res.a_n = a_n;
-res.b_n = b_n;
-res.stim = stim;
 res.tau = tau;
 res.phasor = phasor;
 res.subj = subj;
 res.multiplier = stim.VoltageToPascal.* stim.PascalToLinearSPL;
 res.complex.oae = oae_complex;
 res.complex.nf = noise_complex;
-res.complex.nf2 = noise_complex2;
+res.durs = durs; 
 
+data.result = result; 
+data.res = res;
 %% Export:
 cd(datapath);
-fname = [subj,'_SFOAEswept_',condition];
+fname = [subj,'_SFOAEswept_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'res')
 cd(cwd);

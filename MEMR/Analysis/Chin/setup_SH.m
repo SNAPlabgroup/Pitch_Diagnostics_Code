@@ -6,7 +6,7 @@
 close all;
 clear;
 
-subj = 'Q428';
+subj = 'Q431';
 condition = 'Baseline';
 
 uname = 'samhauser';

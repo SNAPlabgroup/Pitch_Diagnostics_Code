@@ -1,7 +1,7 @@
 % DPOAE swept Analysis
 % Author: Samantha Hauser
 % Created: May 2023
-% Last Updated: August 27, 2023
+% Last Updated: October 27, 2023
 % Purpose:
 % Helpful info:
 
@@ -36,13 +36,16 @@ res.calib = calib;
 
 cd(cwd);
 
-stim.scale = 'log';
-stim.nearfreqs = [0.9,.88, .86,.84];
+if ~isfield(stim, 'scale')
+    stim.scale = 'log';
+    stim.nearfreqs = [0.9,.88, .86,.84];
+end
 trials = size(stim.resp,1);
 
-figure; plot(stim.resp(1,:))
-delay_oops = 0; % 247; %128
-
+figure; plot(stim.resp(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
+text(128, .1, '128'); text(247, .1, '247')
+ask_delay = inputdlg('extra delay?');  % 247; %128
+delay_oops = str2double(ask_delay{1}); 
 %% Set variables from the stim
 phi1_inst = 2 * pi * stim.phi1_inst;
 phi2_inst = 2 * pi * stim.phi2_inst;
@@ -242,17 +245,6 @@ res.complex.nf_epl = NF.P_epl;
 res.f_epl = NF.f;
 res.dbEPL_nf = db(abs(NF.P_epl));
 
-%                 [F1] = calc_FPL(res.f.f1, res.complex_f1, res.calib.Ph1);
-%                 res.complex_f1_fpl = F1.P_fpl;
-%                 res.f1_fpl = F1.f;
-%                 if exist('res.calib.Ph2', 'var')
-%                     [F2] = calc_FPL(res.f.f2, res.complex_f2, res.calib.Ph2);
-%                 else
-%                     [F2] = calc_FPL(res.f.f2, res.complex_f2, res.calib.Ph1);
-%                 end
-%                 res.complex_f2_fpl = F2.P_fpl;
-%                 res.f2_fpl = F2.f;
-
 % plot figure again
 figure;
 plot(freq_f2/1000, res.dbEPL_dp, 'linew', 3, 'Color', 'r');
@@ -274,6 +266,8 @@ drawnow;
 res.f.f2 = freq_f2;         % frequency vectors
 res.f.f1 = freq_f1;
 res.f.dp = freq_dp;
+
+%% Summary Points of OAE amplitude
 dpoae_full = res.dbEPL_dp;
 dpnf_full = res.dbEPL_nf;
 f2 = res.f.f2/1000;
@@ -328,11 +322,30 @@ result.nf_full = dpnf_full;
 result.centerFreqs = centerFreqs; 
 result.oae_summary = dpoae_w; 
 
+
+res.windowdur = windowdur;
+res.offsetwin = offsetwin;
+res.npoints = npoints;
+res.avgDPOAEresp = DPOAE;   % average mic response
+res.t_freq = t_freq;
+res.f.f2 = freq_f2;         % frequency vectors
+res.f.f1 = freq_f1;
+res.f.dp = freq_dp;
+res.a.dp = a_dp;            % coefficients
+res.b.dp = b_dp;
+res.a.f1 = a_f1;
+res.b.f1 = b_f1;
+res.a.f2 = a_f2;
+res.b.f2 = b_f2;
+res.tau.dp = tau_dp;
+res.complex.oae = oae_complex; 
+res.complex.nf = noise_complex; 
+
 data.result = result; 
 data.res = res; 
 %% Export:
 cd(datapath);
-fname = [subj,'_DPOAEswept_',condition, file(end-24:end-4) ];
+fname = [ subj,'_DPOAEswept_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'data')
 cd(cwd);

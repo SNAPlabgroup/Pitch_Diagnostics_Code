@@ -8,28 +8,34 @@
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,['*TEOAE.mat'])).name};
-
-numOfFiles = length(datafile);
-if numOfFiles > 1
-    fprintf('More than one file...Select the right one?\n');
-    datafile = uigetfile(['CEOAE*',subj,'*.mat']);
-elseif numOfFiles < 1
-    fprintf('No files for this subject...Quitting.\n')
-    cd(cwd);
-    return
+datafile = dir(fullfile(cd,['teoae_*.mat']));
+if length(datafile) < 1
+    fprintf('No file...Quitting!\n');
+elseif size(datafile,1) > 1
+    checkDIR =uigetfile('.mat');
+    load(checkDIR);
+    file = checkDIR; 
 else
-    datafile = datafile{1};
+    load(datafile(1).name);
+    file = datafile(1).name; 
 end
 
-load(datafile);
+click= data.stim;
+
+% SET CALIB FILE HERE
+calib = data.FPL.FPLearData;
+res.calib = calib; 
 
 cd(cwd);
 
-click = x.TEOAEData.stim; 
+figure; plot(click.resp(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
+text(128, .1, '128'); text(247, .1, '247')
+ask_delay = inputdlg('extra delay?');  % 247; %128
+delay = str2double(ask_delay{1}); 
+ 
 
 %% Analysis loop
-res.resp_win = click.resp(:, (click.StimWin+1):(click.StimWin + click.RespDur)); % Remove stimulus by windowing
+res.resp_win = click.resp(:, (click.StimWin+1+delay):(click.StimWin + click.RespDur+delay)); % Remove stimulus by windowing
 
 resp = res.resp_win; 
 
@@ -65,7 +71,7 @@ res.Resp =  output_Pa_per_20uPa;
 res.NoiseFloor = noise_Pa_per_20uPa;
 
 %% Plot
-figure(1);
+figure;
 hold on;
 plot(res.freq*1e-3, db(abs(res.Resp)), 'linew', 2);
 ylabel('Response (dB SPL)', 'FontSize', 14, 'FontWeight', 'bold');
@@ -86,7 +92,7 @@ res.resp = db(abs(res.Resp));
 res.nf = db(abs(res.NoiseFloor)); 
 %% Save Variables and figure
 cd(datapath);
-fname = [subj,'_TEOAE_',condition];
+fname = [subj,'_TEOAE_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'res')
 cd(cwd);

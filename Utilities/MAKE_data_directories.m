@@ -5,10 +5,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Enter info about new subject(s)
-subj = 'Q421';
+subj = 'Q412';
 status = 'Baseline';
 user = 'SH';
-location = 1; % 0==laptop/mac; 1==work
+location = 0; % 0==laptop/mac; 1==work
 
 %% Run
 if strcmp(user, 'SH')

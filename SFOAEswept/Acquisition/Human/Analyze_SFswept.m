@@ -39,10 +39,10 @@ else
 end
 
 % set freq we're testing and the timepoints when they happen.
-if abs(stim.speed) < 20 %linear sweep
+if abs(stim.speed) < 20 %log
     testfreq = 2 .^ linspace(log2(f1), log2(f2), npoints);
     t_freq = log2(testfreq/f1)/stim.speed + stim.buffdur;
-else % log sweep
+else % linear
     testfreq = linspace(f1, f2, npoints);
     t_freq = (testfreq-f1)/stim.speed + stim.buffdur;
 end
