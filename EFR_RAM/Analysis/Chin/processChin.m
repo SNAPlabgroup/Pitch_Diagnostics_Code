@@ -96,7 +96,7 @@ set(gcf,'Position',[1557 538 560 420])
 
 %% Export:
 
-suffix2 = [condition,'/',subj,'/Preprocessed'];
+suffix2 = [condition,'/',subj,'/Processed'];
 
 data_out = [prefix,suffix2];
 if ~exist(data_out,'dir')
