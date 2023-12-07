@@ -5,10 +5,10 @@ close all;
 clear;
 
 condition = 'Baseline';
-subj = 'Q427';
-fmod = 103;
+subj = 'Q427_2';
+fmod = 223;
 
-uname = 'asivapr';
+uname = 'sivaprakasaman';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/EFR_RAM/Chin/'];
 suffix = [condition,'/',subj];
 

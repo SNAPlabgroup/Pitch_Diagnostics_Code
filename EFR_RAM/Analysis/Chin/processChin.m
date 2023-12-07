@@ -3,8 +3,8 @@
 %Purpose: Script to import/plot/apply additional processing to RAM_EFR
 %files (chin version)
 
-%Helpful Info: Be sure to define datapath so Import data section works. 
-%see my example setup_AS file.   
+%Helpful Info: Be sure to define datapath so Import data section works.
+%see my example setup_AS file.
 
 
 harmonics = 16;
@@ -19,7 +19,7 @@ frames = round(t_win*fs);
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,'p*RAM*.mat')).name};
+datafile = {dir(fullfile(cd,['p*RAM*',num2str(fmod),'*.mat'])).name};
 load(datafile{1});
 fname_out = [datafile{1}(1:end-4),'_matlab.mat'];
 cd(cwd);
