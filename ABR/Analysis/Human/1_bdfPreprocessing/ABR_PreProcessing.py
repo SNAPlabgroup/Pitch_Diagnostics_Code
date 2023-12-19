@@ -10,8 +10,8 @@ import os
 import sys
 import warnings
 
-subj = 'S343';
-cond = 'YNH';
+subj = 'S367';
+cond = 'HL';
 
 isAndrew = 0;
 local = 0;

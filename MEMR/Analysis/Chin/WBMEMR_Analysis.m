@@ -25,6 +25,7 @@ end
 
 stim = data.stim;
 
+
 % SET CALIB FILE HERE
 calib = data.FPL.FPLearData;
 res.calib = calib;
@@ -67,9 +68,9 @@ figure_prop_val = {'auto', 'inches', [1 1 8 5]}; % xcor, ycor, xwid, yheight
 figure;
 set(gcf,figure_prop_name,figure_prop_val);
 if stim.fc == 7000
-    sgtitle([subj ' | MEMR - HP | ' condition], 'FontSize', 14)
+    title([subj ' | MEMR - HP | ' condition], 'FontSize', 14)
 else
-    sgtitle([subj ' | MEMR - WB | ' condition], 'FontSize', 14)
+    title([subj ' | MEMR - WB | ' condition], 'FontSize', 14)
 end
 subplot(1,3,1:2)
 semilogx(res.freq / 1e3, res.MEM, 'linew', 2);
@@ -81,7 +82,7 @@ legend(num2str(res.elicitor'), 'FontSize', 10, 'NumColumns', 2, 'location', 'bes
 xlabel('Frequency (kHz)', 'FontSize', 14, 'FontWeight', 'bold');
 ylabel('Ear canal pressure (dB re: Baseline)', 'FontSize', 14, 'FontWeight', 'bold');
 
-power = mean(abs(res.MEM(:, res.ind)), 2).*5;
+power = mean(abs(res.MEM(:, res.ind)), 2);
 deltapow = power - min(power);
 subplot(1,3,3)
 

@@ -28,10 +28,11 @@ res.calib = calib;
 
 cd(cwd);
 
-figure; plot(click.resp(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
+fig = figure(123); plot(click.resp(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
 text(128, .1, '128'); text(247, .1, '247')
 ask_delay = inputdlg('extra delay?');  % 247; %128
 delay = str2double(ask_delay{1}); 
+close(fig)
  
 
 %% Analysis loop

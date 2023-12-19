@@ -19,10 +19,21 @@ frames = round(t_win*fs);
 
 %% Import data
 cwd = pwd;
+
 cd(datapath)
-datafile = {dir(fullfile(cd, file)).name};
-load(datafile{1});
-fname_out = [datafile{1}(1:end-4),'_matlab.mat'];
+datafile = dir(fullfile(cd,['p*.mat']));
+if length(datafile) < 1
+    fprintf('No file...Quitting!\n');
+elseif size(datafile,1) > 1
+    checkDIR =uigetfile('.mat');
+    load(checkDIR);
+    file = checkDIR; 
+else
+    load(datafile(1).name);
+    file = datafile(1).name; 
+end
+
+fname_out = [file(1:end-4),'_matlab.mat'];
 cd(cwd);
 %% Data analysis & plotting:
 fs_orig = data.Stimuli.RPsamprate_Hz;
@@ -99,7 +110,7 @@ if ~exist(data_out,'dir')
 end
 
 cd(data_out);
-fname = [subj,'_RAM_efr_chin_',fmod, '_',condition];
+fname = [subj,'_RAM_EFR_',char(string(fmod)), '_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
 cd(cwd)

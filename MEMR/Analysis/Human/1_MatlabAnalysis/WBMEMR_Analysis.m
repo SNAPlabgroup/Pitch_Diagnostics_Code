@@ -11,12 +11,12 @@
 cwd = pwd;
 cd(datapath)
 
-datafile = {dir(fullfile(cd,['MEMR_', subj, '_*.mat'])).name};
+datafile = {dir(fullfile(cd,['WBMEMR_*', subj, '_*.mat'])).name};
 
 numOfFiles = length(datafile);
 if numOfFiles > 2
     fprintf('More files than expected...Select the right one?\n');
-    datafile = uigetfile([ 'MEMR_',subj, '_*.mat']);
+    datafile = uigetfile([ 'WBMEMR_*',subj, '_*.mat']);
 elseif numOfFiles < 1
     fprintf('No files for this subject...Quitting.\n')
     cd(cwd);
@@ -47,14 +47,14 @@ for i = 1:2
     load(file);
     cd(cwd);
     
-    res = MEMRbyLevel(stim);
+    res = MEMRbyLevel(data);
     
     figure_prop_name = {'PaperPositionMode', 'units', 'Position'};
     figure_prop_val = {'auto', 'inches', [1 1 8 5]}; % xcor, ycor, xwid, yheight
     
     figure;
     set(gcf,figure_prop_name,figure_prop_val);
-    if stim.fc == 7000
+    if data.stim.fc == 7000
         sgtitle([subj ' | MEMR - HP | ' condition], 'FontSize', 14)
     else
         sgtitle([subj ' | MEMR - WB | ' condition], 'FontSize', 14)
@@ -85,7 +85,7 @@ for i = 1:2
     res.threshold = interp1(deltapow, res.elicitor, 0.1); 
     %% Export:
     cd(datapath);
-    if stim.fc == 7000
+    if data.stim.fc == 7000
         fname = [subj,'_MEMR_HP_',condition];
     else
         fname = [subj,'_MEMR_WB_',condition];

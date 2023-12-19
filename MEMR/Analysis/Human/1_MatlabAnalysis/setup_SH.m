@@ -6,8 +6,8 @@
 close all;
 clear;
 
-subj = 'S343';
-condition = 'YNH';
+subj = 'S367';
+condition = 'HL';
 
 uname = 'samhauser';
 prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/MEMR/Human/'];

@@ -12,7 +12,7 @@ if strcmp(user, 'SH')
     if loc == 1
         prefix = ['F:\'];
     elseif loc == 0 % mac
-        prefix = ['/Volumes/SNH/'];
+        prefix = ['/Volumes/'];
     end
     suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, '_RawChinData'];
 elseif strcmp(user, 'AS')
@@ -103,17 +103,7 @@ for dirNum = 1:length(chindirs)
             fprintf(sprintf('saved: %s\n', filename))
             clear x;
             
-        elseif contains(pfiles(p), '_dpoae')
-            if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'DPOAE', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file), 'dir')
-                mkdir(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'DPOAE', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            end
-            copyfile(all_p_files(p).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                filesep, 'DPOAE', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            fprintf('NEL DPOAE saved\n')
-            
-        elseif contains(pfiles(p), 'ABR') || contains(pfiles(p), 'calib_raw') || contains(pfiles(p), 'calib_inv')
+        elseif contains(pfiles(p), 'ABR')
             if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
                     filesep, 'ABR', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file), 'dir')
                 mkdir(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
@@ -121,7 +111,6 @@ for dirNum = 1:length(chindirs)
             end
             copyfile(all_p_files(p).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
                 filesep, 'ABR', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            fprintf('ABRs saved\n')
             
         elseif contains(pfiles(p), 'FFR_RAM')
             if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
@@ -131,17 +120,7 @@ for dirNum = 1:length(chindirs)
             end
             copyfile(all_p_files(p).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
                 filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            fprintf('RAM saved\n')
-        
-        elseif contains(pfiles(p), 'PitchEFR') || contains(pfiles(p), 'f0103')
-            if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file), 'dir')
-                mkdir(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            end
-            copyfile(all_a_files(a).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            fprintf('Pitch EFRs saved\n')
+            
         end
         
     end
@@ -159,7 +138,7 @@ for dirNum = 1:length(chindirs)
             end
             copyfile(all_a_files(a).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
                 filesep, 'ABR', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-      fprintf('ABR (a files) saved\n')
+      
         
         elseif contains(afiles(a), 'FFR_RAM')
             if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
@@ -169,21 +148,26 @@ for dirNum = 1:length(chindirs)
             end
             copyfile(all_a_files(a).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
                 filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-        fprintf('RAM (a files) saved\n')
         
-        elseif contains(afiles(a), 'PitchEFR') || contains(afiles(a), 'f0103')
+        
+        elseif contains((afiles(a), 'FFR_Pit')
             if ~exist(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file), 'dir')
+                    filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file), 'dir')
                 mkdir(strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                    filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
+                    filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
             end
             copyfile(all_a_files(a).name, strcat(prefix, 'THESIS', filesep, 'Pitch_Diagnostics_Data', ...
-                filesep, 'EFR_Pitch', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
-            fprintf('PitchEFR (a files) saved\n')
+                filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Raw', filesep, file))
+        
+        
+        
+        
         end
     end
     
+    
+    
+    
     cd(alldatadir)
 end
-
 cd(cwd)

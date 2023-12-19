@@ -1,7 +1,7 @@
 %% Get Data from SNAP lab computer
 
-subj = 'S364';
-condition = 'YNH';
+subj = 'S366';
+condition = 'HL';
 user = 'SH';
 
 %% Run
@@ -16,11 +16,11 @@ end
 snapdir = ['C:\Experiments\'];
 cdir = pwd; 
 
-measdirs = {'Sam\DPOAEswept', 'Sam\SFOAEswept', 'Sam\Threshold_ForTuning', ...
+measdirs = {'Sam\DPOAEswept', 'Sam\SFOAEswept', 'Sam\Threshold_ForTuning', 'Sam\TuningCurveTDT' ...
     'Sam\TEOAE', 'Sam\MRT_tonecomplex', 'Sam\Jane', 'Sam\FrequencyTuning_SekMoore', ...
-    'Sam\AM', 'Sam\WBMEMRipsi', 'Andrew\Threshold_ForTuning', 'Andrew\FrequencyTuning_SekMoore', ...
+    'Sam\AM', 'Sam\WBMEMR', 'Andrew\Threshold_ForTuning', 'Andrew\FrequencyTuning_SekMoore', ...
     'Andrew\F0DL\F0DL_3AFC_AppDesigner'};
-measfolder = {'DPOAEswept', 'SFOAEswept', 'PTC', ...
+measfolder = {'DPOAEswept', 'SFOAEswept', 'PTC', 'PTC',...
     'TEOAE', 'MRT_tonecomplex', 'Jane', 'PTC', ...
     'AMdetection', 'MEMR', 'PTC', 'PTC', ...
     'F0DL'};
@@ -31,7 +31,7 @@ for i = 1:length(measdirs)
         cd(strcat(measdir, '\Results\', subj))
         files = dir('*.mat'); 
         for f = 1:length(files)
-            copyfile(files(f).name, strcat(datadir, fs, meas, fs, 'Human', fs, condition, fs, subj))
+            copyfile(files(f).name, strcat(datadir, fs, meas, fs, 'Human', fs, condition, fs, subj, fs, 'Raw'))
             fprintf('Copy file: %s\n', files(f).name)
         end
         cd(snapdir)
@@ -42,7 +42,7 @@ if exist(strcat(snapdir, '\FPLclick\EARCAL\', subj),'dir')
     cd(strcat(snapdir, '\FPLclick\EARCAL\', subj)); 
     fpl_files = dir('*.mat');
         for f = 1:length(fpl_files)
-            copyfile(fpl_files(f).name,  strcat(datadir, fs, 'FPLcalib', fs, 'Human', fs, condition, fs, subj))
+            copyfile(fpl_files(f).name,  strcat(datadir, fs, 'FPLcalib', fs, 'Human', fs, condition, fs, subj, fs, 'Raw'))
             fprintf('Copy file: %s\n', fpl_files(f).name)
         end
         cd(snapdir)

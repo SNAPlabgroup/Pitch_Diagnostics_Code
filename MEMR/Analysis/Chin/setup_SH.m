@@ -7,11 +7,22 @@ close all;
 clear;
 
 subj = 'Q431';
-condition = 'Baseline';
+condition = 'CA_2wksPost';
+
+user = 'SH'; 
+loc = 0; 
 
 uname = 'samhauser';
-prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/MEMR/Chin/'];
-suffix = [condition,'/',subj];
+
+if strcmp(user, 'SH')
+    if loc == 1
+        prefix = ['F:\'];
+    elseif loc == 0 % mac
+        prefix = ['/Volumes/SNH/']; 
+    end
+end
+
+suffix = ['THESIS/Pitch_Diagnostics_Data/MEMR/Chin/', condition,'/',subj];
 datapath = [prefix,suffix];
 
 WBMEMR_Analysis;

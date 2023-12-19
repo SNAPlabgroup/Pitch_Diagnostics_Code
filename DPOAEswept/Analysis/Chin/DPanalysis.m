@@ -1,7 +1,7 @@
 % DPOAE swept Analysis
 % Author: Samantha Hauser
 % Created: May 2023
-% Last Updated: October 27, 2023
+% Last Updated: December 11, 2023
 % Purpose:
 % Helpful info:
 
@@ -27,26 +27,32 @@ else
     load(datafile(1).name);
     file = datafile(1).name; 
 end
-
-stim = data.stim;
-
-% SET CALIB FILE HERE
-calib = data.FPL.FPLearData;
-res.calib = calib; 
-
 cd(cwd);
+
+%% Get data structure and handle old data storage formats
+if exist('data', 'var')
+    stim = data.stim;
+end
 
 if ~isfield(stim, 'scale')
     stim.scale = 'log';
     stim.nearfreqs = [0.9,.88, .86,.84];
 end
+
+%% Get appropriate calibration file
+calib = data.FPL.FPLearData;
+res.calib = calib; 
+
+%% Analysis set up
 trials = size(stim.resp,1);
 
+% Check for additional delay for old data if needed
 figure; plot(stim.resp(1,1:400)); hold on; plot([128, 247], [0,0], 'or')
 text(128, .1, '128'); text(247, .1, '247')
 ask_delay = inputdlg('extra delay?');  % 247; %128
 delay_oops = str2double(ask_delay{1}); 
-%% Set variables from the stim
+
+% Set variables from the stim
 phi1_inst = 2 * pi * stim.phi1_inst;
 phi2_inst = 2 * pi * stim.phi2_inst;
 phi_dp_inst = (2.*stim.phi1_inst - stim.phi2_inst) * 2 * pi;
@@ -135,9 +141,6 @@ coeffs = zeros(npoints, 2);
 tau_dp = zeros(npoints, 1); % delay if offset > 0
 coeffs_noise = zeros(npoints,8);
 
-% if duration changes with frequency
-%durs = -.5*(2.^(0.003*t_freq)-1)/ (0.003*log(2)) + 0.5;
-
 % Least Squares fit of Chirp model (stimuli, DP, noise)
 for k = 1:npoints
     
@@ -166,6 +169,7 @@ for k = 1:npoints
     end
     [~, ind] = min(resid(:,1));
     coeffs(k, 1:2) = coeff(ind, 1:2);
+    
     % Calculate delay
     tau_dp(k) = (ind(1) - 1) * 1/stim.Fs; % delay in sec
     
@@ -217,22 +221,23 @@ phasor_dp = exp(-1j * phi_dp * 2 * pi);
 
 VtoSPL = stim.VoltageToPascal .* stim.PascalToLinearSPL;
 res.VtoSPL = VtoSPL;
-%% Plot Results Figure
-figure;
-plot(freq_f2/1000, db(abs(oae_complex).*VtoSPL), 'linew', 2, 'Color', [0 0.4470 0.7410]);
-hold on;
-plot(freq_f2/1000, db(abs(noise_complex).*VtoSPL), '--', 'linew', 2, 'Color', [0.6350 0.0780 0.1840]);
-plot(freq_f2/1000, db(abs(complex(a_f2,b_f2)).*VtoSPL), 'linew', 2, 'Color', [0.4940 0.1840 0.5560]);
-plot(freq_f1/1000, db(abs(complex(a_f1, b_f1)).*VtoSPL), 'linew', 2, 'Color', [0.9290 0.6940 0.1250]);
-title('DPOAE', 'FontSize', 14)
-set(gca, 'XScale', 'log', 'FontSize', 14)
-xlim([.5, 16])
-ylim([-50, 90])
-xticks([.5, 1, 2, 4, 8, 16])
-ylabel('Amplitude (dB SPL)', 'FontWeight', 'bold')
-xlabel('F2 Frequency (kHz)', 'FontWeight', 'bold')
-legend('OAE', 'NF', 'F2', 'F1')
-drawnow;
+
+% %% Plot Results Figure (SPL)
+% figure;
+% plot(freq_f2/1000, db(abs(oae_complex).*VtoSPL), 'linew', 2, 'Color', [0 0.4470 0.7410]);
+% hold on;
+% plot(freq_f2/1000, db(abs(noise_complex).*VtoSPL), '--', 'linew', 2, 'Color', [0.6350 0.0780 0.1840]);
+% plot(freq_f2/1000, db(abs(complex(a_f2,b_f2)).*VtoSPL), 'linew', 2, 'Color', [0.4940 0.1840 0.5560]);
+% plot(freq_f1/1000, db(abs(complex(a_f1, b_f1)).*VtoSPL), 'linew', 2, 'Color', [0.9290 0.6940 0.1250]);
+% title('DPOAE', 'FontSize', 14)
+% set(gca, 'XScale', 'log', 'FontSize', 14)
+% xlim([.5, 16])
+% ylim([-50, 90])
+% xticks([.5, 1, 2, 4, 8, 16])
+% ylabel('Amplitude (dB SPL)', 'FontWeight', 'bold')
+% xlabel('F2 Frequency (kHz)', 'FontWeight', 'bold')
+% legend('OAE', 'NF', 'F2', 'F1')
+% drawnow;
 
 %% Get EPL units
 [DP] = calc_EPL(freq_dp, oae_complex.*VtoSPL, calib, 1);
@@ -245,7 +250,7 @@ res.complex.nf_epl = NF.P_epl;
 res.f_epl = NF.f;
 res.dbEPL_nf = db(abs(NF.P_epl));
 
-% plot figure again
+%% plot figure (EPL)
 figure;
 plot(freq_f2/1000, res.dbEPL_dp, 'linew', 3, 'Color', 'r');
 hold on;
@@ -263,16 +268,17 @@ xlabel('F2 Frequency (kHz)', 'FontWeight', 'bold')
 legend('DPOAE', 'NF')
 drawnow;
 
+%% Summary Points of OAE amplitude
 res.f.f2 = freq_f2;         % frequency vectors
 res.f.f1 = freq_f1;
 res.f.dp = freq_dp;
 
-%% Summary Points of OAE amplitude
 dpoae_full = res.dbEPL_dp;
 dpnf_full = res.dbEPL_nf;
 f2 = res.f.f2/1000;
 
-% SEt params
+%% Calculate Summary Points
+% Set params
 fmin = 0.5;
 fmax = 16;
 edges = 2 .^ linspace(log2(fmin), log2(fmax), 21);
@@ -283,16 +289,19 @@ dpoae = zeros(length(centerFreqs),1);
 dpnf = zeros(length(centerFreqs),1);
 dpoae_w = zeros(length(centerFreqs),1);
 dpnf_w = zeros(length(centerFreqs),1);
+
 % resample / average to 9 center frequencies
 for z = 1:length(centerFreqs)
     band = find( f2 >= bandEdges(z) & f2 < bandEdges(z+1));
-    
-    % Do some weighting by SNR
-    
-    % TO DO: NF from which SNR was calculated included median of 7 points
+      
+    % NF from which SNR was calculated included median of 7 points
     % nearest the target frequency.
-    SNR = dpoae_full(band) - dpnf_full(band);
-    weight = (10.^(SNR./10)).^2;
+    for y = 1:length(band)
+        dpnf_medians(y) = median(dpnf_full(band(y)-3:band(y)+3)); 
+    end
+        
+    SNR = dpoae_full(band) - dpnf_medians;
+    weight = (10.^(SNR./10)).^2; % weighted averaged based on SNR
     
     dpoae(z, 1) = mean(dpoae_full(band));
     dpnf(z,1) = mean(dpnf_full(band));
@@ -302,26 +311,26 @@ for z = 1:length(centerFreqs)
     
 end
 
-
+%% Plot final figure
 figure;
 hold on;
 semilogx(f2, dpoae_full, 'Color', [.8, .8, .8], 'linew', 2)
 semilogx(f2, dpnf_full, '--', 'linew', 1.5, 'Color', [.8, .8, .8])
-semilogx(centerFreqs, dpoae_w, 'o', 'linew', 4, 'MarkerSize', 10, 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'b')
+semilogx(centerFreqs, dpoae_w, 'o', 'linew', 2, 'MarkerSize', 7, 'MarkerEdgeColor', 'b')
 set(gca, 'XScale', 'log', 'FontSize', 14)
 xlim([.5, 16])
 ylim([-50, 50])
 xticks([.5, 1, 2, 4, 8, 16])
 ylabel('Amplitude (dB EPL)', 'FontWeight', 'bold')
 xlabel('F2 Frequency (kHz)', 'FontWeight', 'bold')
-title('DPOAE', 'FontSize', 16); 
+title(sprintf('%s | DPOAE | %s', subj, condition), 'FontSize', 16); 
 
+%% Save all resulting variable
 result.f2 = f2; 
 result.oae_full = dpoae_full; 
 result.nf_full = dpnf_full; 
 result.centerFreqs = centerFreqs; 
 result.oae_summary = dpoae_w; 
-
 
 res.windowdur = windowdur;
 res.offsetwin = offsetwin;
