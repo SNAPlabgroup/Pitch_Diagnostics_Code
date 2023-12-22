@@ -4,9 +4,9 @@
 clear;
 
 %% Enter information here: 
-subj = 'S367';                    % e.g., 'Q440'
+subj = 'S366';                    % e.g., 'Q440'
 condition = 'HL';                 % e.g, 'HL', 'YNH', 'MANH'
-location = 1;                     % 0 == mac, 1 == Desktop, 2 == SNAPlab
+location = 0;                     % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
 

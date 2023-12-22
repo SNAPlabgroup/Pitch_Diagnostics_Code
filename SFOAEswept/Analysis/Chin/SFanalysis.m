@@ -16,7 +16,7 @@ npoints = 512;
 
 %% Import data
 cwd = pwd;
-cd(datapath)
+cd([datapath, filesep, 'Preprocessed'])
 datafile = dir(fullfile(cd,['sweptSFOAE_*.mat']));
 if length(datafile) < 1
     fprintf('No file...Quitting!\n');
@@ -598,7 +598,7 @@ res.durs = durs;
 data.result = result; 
 data.res = res;
 %% Export:
-cd(datapath);
+cd([datapath, filesep, 'Processed']);
 fname = [subj,'_SFOAEswept_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'data')

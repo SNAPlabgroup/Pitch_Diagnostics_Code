@@ -1,8 +1,8 @@
 %% Comparison of Pre and Post
 clear;
 
-subj = 'Q430';
-conditions = {'Baseline', 'CA_2wksPost'};
+subj = 'Q426';
+conditions = {'Baseline'};
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';

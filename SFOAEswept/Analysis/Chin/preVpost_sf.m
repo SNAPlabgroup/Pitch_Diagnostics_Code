@@ -2,8 +2,8 @@
 
 clear;
 
-subj = 'Q430';
-conditions = {'Baseline', 'CA_2wksPost'};
+subj = 'Q427';
+conditions = { 'Baseline', 'PTS_2wksPost'};
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
@@ -16,12 +16,25 @@ end
 
 for k = 1:length(conditions)
     condition = conditions{k};
-    suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'SFOAEswept', filesep, 'Chin', filesep, condition, filesep, subj];
+    suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, ...
+        'SFOAEswept', filesep, 'Chin', filesep, condition, filesep, subj, ...
+        filesep, 'Processed'];
     datapath = [prefix,suffix];
+    
+     AwakeFlag = 1; 
     
     % Import Data
     cwd = pwd;
     cd(datapath)
+    if exist('Sedated', 'dir')
+        sed = questdlg('Awake or Sedated?', 'Sedated?', 'Awake', 'Sedated', 'Awake'); 
+        if strcmp(sed, 'Sedated')
+            cd('Sedated')
+            AwakeFlag = 0; 
+        end  
+    end
+
+
     datafile = dir(fullfile(cd,[subj, '_SFOAEswept_' condition, '*.mat']));
     if length(datafile) < 1
         fprintf('No file...Quitting!\n');
@@ -49,27 +62,18 @@ end
 figure;
 hold on;
 
-% for p = 1:size(oaesum_all,1)
-% semilogx(f_all(p,:), oae_all(p,:), 'linew', 2)
-% semilogx(f_all(p,:), nf_all(p,:), '--', 'linew', 1.5)
-% semilogx(centerfreq_all(p,:), oaesum_all(p,:), 'o', 'linew', 2, 'MarkerSize', 8)
-% end
 
-semilogx(f_all(1,:), oae_all(1,:), 'Color', 'k', 'linew', 2)
-semilogx(f_all(1,:), nf_all(1,:), '--', 'linew', 1.5, 'Color', 'k')
-semilogx(centerfreq_all(1,:), oaesum_all(1,:), 'o', 'linew', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k')
+colors = {'k', 'r', 'b', 'g', 'y'}; 
 
-semilogx(f_all(2,:), oae_all(2,:), 'Color', 'r', 'linew', 2)
-semilogx(f_all(2,:), nf_all(2,:), '--', 'linew', 1.5, 'Color', 'r')
-semilogx(centerfreq_all(2,:), oaesum_all(2,:), 'o', 'linew', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'r')
+for k = 1:length(conditions)
+    semilogx(f_all(k,:), oae_all(k,:), 'Color', colors{k}, 'linew', 2)
+    %legend(conditions)
+end
 
-semilogx(f_all(3,:), oae_all(3,:), 'Color', 'b', 'linew', 2)
-semilogx(f_all(3,:), nf_all(3,:), '--', 'linew', 1.5, 'Color', 'b')
-semilogx(centerfreq_all(3,:), oaesum_all(3,:), 'o', 'linew', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'b')
-
-semilogx(f_all(4,:), oae_all(4,:), 'Color', 'g', 'linew', 2)
-semilogx(f_all(4,:), nf_all(4,:), '--', 'linew', 1.5, 'Color', 'g')
-semilogx(centerfreq_all(4,:), oaesum_all(4,:), 'o', 'linew', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'g')
+for k=1:length(conditions)
+    semilogx(f_all(k,:), nf_all(k,:), '--', 'linew', 1.5, 'Color', colors{k})
+    semilogx(centerfreq_all(k,:), oaesum_all(k,:), 'o', 'linew', 2, 'MarkerSize', 8, 'MarkerFaceColor', colors{k}, 'MarkerEdgeColor', colors{k})
+end
 
 
 %legend('pre-oae', 'pre-nf', '', '1d post-oae', '1d post-nf', '', '2w post-oae', '2w post-nf', '','location', 'northwest')

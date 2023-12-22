@@ -3,7 +3,7 @@
 % Load Data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,[subj, '_DPOAEswept_', condition, '.mat'])).name};
+datafile = {dir(fullfile(cd,[ subj, '_DPOAEswept_', condition, '.mat'])).name};
 if length(datafile) > 1
     fprintf('More than 1 data file. Check this is correct file!\n');
 end

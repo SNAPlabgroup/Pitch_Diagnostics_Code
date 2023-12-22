@@ -100,6 +100,8 @@ res.threshold = interp1(deltapow, res.elicitor, 0.1)
 data.res = res; 
 %% Export:
 cd(datapath);
+cd ..
+cd('Processed')
 if stim.fc == 7000
     fname = [subj,'_MEMR_HP_',condition,  file(end-24:end-4)];
 else

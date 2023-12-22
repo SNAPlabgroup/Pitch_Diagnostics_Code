@@ -3,9 +3,9 @@
 
 clear;
 
-condition = 'CA_2wksPost';
-subj = 'Q431';
-loc = 1; 
+condition = 'PTS_2wksPost';
+subj = 'Q427';
+loc = 0; 
 
 if loc == 1
     prefix = ['F:/', 'THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'EFR_RAM', ...
@@ -15,7 +15,7 @@ elseif loc == 0
     filesep, 'Chin', filesep]; 
 end
 
-suffix = [ condition,filesep,subj];
+suffix = [ condition,filesep,subj, filesep, 'Raw'];
 datapath = [prefix,suffix];
 
 

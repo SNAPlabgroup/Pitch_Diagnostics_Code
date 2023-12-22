@@ -6,8 +6,8 @@
 close all;
 clear;
 
-subj = 'Q431';
-condition = 'CA_2wksPost';
+subj = 'Q426';
+condition = 'TTS_1dayPost';
 
 user = 'SH'; 
 loc = 0; 
@@ -22,7 +22,7 @@ if strcmp(user, 'SH')
     end
 end
 
-suffix = ['THESIS/Pitch_Diagnostics_Data/MEMR/Chin/', condition,'/',subj];
+suffix = ['THESIS/Pitch_Diagnostics_Data/MEMR/Chin/', condition,'/',subj, filesep, 'Preprocessed', filesep];
 datapath = [prefix,suffix];
 
 WBMEMR_Analysis;
