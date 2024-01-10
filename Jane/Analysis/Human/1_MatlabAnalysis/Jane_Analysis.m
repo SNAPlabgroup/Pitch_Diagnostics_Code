@@ -8,7 +8,7 @@
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,[ subj, '_*.mat'])).name};
+datafile = dir(fullfile(cd,[ 'MST_', subj, '_*.mat']));
 cd(cwd);
 numOfFiles = length(datafile);
 if numOfFiles == 0
@@ -23,15 +23,15 @@ red = [[254,229,217]/255; [252,187,161]/255; [252,146,114]/255; [251,106,74]/255
 %% Loop for each block
 for i = 1:numOfFiles
     
-    load([datapath, filesep, datafile{i}]);
+    load([datapath, filesep, datafile(i).name]);
     
-    [up, down, all] = getReversals(presentedSNRs);
-    threshold(i,1) = mean(presentedSNRs(up((end-3):end)))*0.25 + ...
-        0.75*mean(presentedSNRs(down((end-3):end))); 
+    [up, down, all] = getReversals(data.resp.presentedSNRs);
+    threshold(i,1) = mean(data.resp.presentedSNRs(up((end-3):end)))*0.25 + ...
+        0.75*mean(data.resp.presentedSNRs(down((end-3):end))); 
     
-    plot(presentedSNRs, 'o-k', 'linew', 2, 'MarkerSize', 10 ); % 'Color', [150, 150, 150]./255
+    plot(data.resp.presentedSNRs, 'o-k', 'linew', 2, 'MarkerSize', 10 ); % 'Color', [150, 150, 150]./255
     hold on;
-    plot(1:numel(presentedSNRs), ones(size(presentedSNRs)).*threshold(i,1), ...
+    plot(1:numel(data.resp.presentedSNRs), ones(size(data.resp.presentedSNRs)).*threshold(i,1), ...
         '--', 'linew', 1.5, 'color', red(i, :));
 
 end
@@ -61,6 +61,8 @@ hold off;
 
 %% Save Variables and figure
 cd(datapath);
+cd .. 
+cd ('Processed')
 fname = [subj,'_Jane_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'res')

@@ -6,8 +6,8 @@
 
 clear;
 
-subj = 'Q431';
-condition = 'CA_2wksPost';
+subj = 'Q422';
+condition = 'Baseline';
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
@@ -18,7 +18,8 @@ elseif location == 0 % Mac
     prefix = ['/Volumes/SNH/'];
 end 
 
-suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'TEOAE', filesep, 'Chin', filesep, condition, filesep, subj];
+suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'TEOAE', ...
+    filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Preprocessed'];
 datapath = [prefix,suffix]; 
 
 TEOAE_Analysis;

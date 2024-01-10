@@ -1,9 +1,9 @@
 % Organize chin files
 clear;
 
-subj = 'Q427';
-gender = 'M';
-condition = 'PTS_2wksPost';
+subj = 'Q441';
+gender = 'F';
+condition = 'Baseline';
 user = 'SH';
 loc = 0;
 

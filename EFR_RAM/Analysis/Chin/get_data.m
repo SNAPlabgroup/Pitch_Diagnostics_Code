@@ -1,7 +1,7 @@
 function [t, T_env, PKS, PLV_env, f, LOCS] = get_data(prefix, subj, condition)
 
 suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'EFR_RAM', ...
-    filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Preprocessed'];
+    filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Processed'];
 datapath = [prefix,suffix];
 
 % Import Data

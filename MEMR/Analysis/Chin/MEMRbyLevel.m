@@ -47,14 +47,14 @@ delay = 0;
 for k = 1:stim.nLevels
    temp = reshape(squeeze(stim.resp(k, :, 2:end, 1+delay:endsamps+delay)),...
       (stim.nreps-1)*stim.Averages, endsamps);
-   resp(k, :) = trimmean(temp, 20, 1); %#ok<*SAGROW> % maybe don't want to do AR or throw out 20% here...
+   resp(k, :) = trimmean(temp, 5, 1); %#ok<*SAGROW> % changed 20 to 5; maybe don't want to do AR or throw out 20% here...
    resp_freq(k, :) = pmtm(resp(k, :), 4, freq, stim.Fs);
    blevs = k;
    temp2 = squeeze(stim.resp(k, :, 1, 1+delay:endsamps+delay)); % this is for the first click trials
    if(numel(blevs) > 1) 
       temp2 = reshape(temp2, size(temp2, 2)*numel(k), endsamps);
    end
-   bline(k, :) = trimmean(temp2, 20, 1);  % 
+   bline(k, :) = trimmean(temp2, 5, 1);  % 20 to 5
    bline_freq(k, :) = pmtm(bline(k, :), 4, freq, stim.Fs);
 end
 

@@ -2,8 +2,8 @@
 
 clear;
 
-subj = 'Q427';
-conditions = { 'Baseline', 'PTS_2wksPost'};
+subj = 'Q443';
+conditions = {'Baseline', 'Baseline', 'Baseline','Baseline','Baseline'};
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';

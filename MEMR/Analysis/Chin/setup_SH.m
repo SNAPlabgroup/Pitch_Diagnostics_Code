@@ -6,8 +6,8 @@
 close all;
 clear;
 
-subj = 'Q426';
-condition = 'TTS_1dayPost';
+subj = 'Q441';
+condition = 'Baseline';
 
 user = 'SH'; 
 loc = 0; 

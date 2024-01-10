@@ -93,6 +93,8 @@ res.resp = db(abs(res.Resp));
 res.nf = db(abs(res.NoiseFloor)); 
 %% Save Variables and figure
 cd(datapath);
+cd .. 
+cd('Processed')
 fname = [subj,'_TEOAE_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'res')

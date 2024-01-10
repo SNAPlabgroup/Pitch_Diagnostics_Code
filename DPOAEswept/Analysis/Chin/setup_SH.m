@@ -4,8 +4,8 @@
 clear;
 
 %% Enter information here: 
-subj = 'Q427';                  % e.g., 'Q440'
-condition = 'PTS_2wksPost';         % e.g., 'Baseline', 'CA_2wksPost'
+subj = 'Q440';                  % e.g., 'Q440'
+condition = 'Baseline';         % e.g., 'Baseline', 'CA_2wksPost'
 location = 0;                   % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';

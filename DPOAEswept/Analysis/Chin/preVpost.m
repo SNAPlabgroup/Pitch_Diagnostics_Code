@@ -6,8 +6,8 @@
 
 clear;
 
-subj = 'Q427';                                  %e.g., 'Q419'
-conditions = { 'Baseline', 'PTS_2wksPost'};     % e.g. {'Baseline', 'PTS_2wksPost', 'Baseline', 'PTS_2wksPost'};
+subj = 'Q440';                                  %e.g., 'Q419'
+conditions = {'Baseline', 'Baseline', 'Baseline'};     % e.g. {'Baseline', 'PTS_2wksPost', 'Baseline', 'PTS_2wksPost'};
 location = 0;                                   % 0 == mac, 1 == Desktop, 2 == SNAPlab
 uname = 'samhauser';
 

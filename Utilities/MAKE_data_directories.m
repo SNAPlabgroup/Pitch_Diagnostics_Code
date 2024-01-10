@@ -5,8 +5,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Enter info about new subject(s)
-subj = 'Q426';
-conditions = {'TTS_1dayPost', 'TTS_2wksPost'};
+subj = 'Q440';
+conditions = {'Baseline'};
 user = 'SH';
 location = 0; % 0==laptop/mac; 1==work
 

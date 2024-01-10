@@ -44,6 +44,15 @@ text(128, .1, '128'); text(247, .1, '247')
 ask_delay = inputdlg('extra delay?');  % 247; %128
 delay_oops = str2double(ask_delay{1}); 
 
+
+% Check Awake or Sedated
+sed = questdlg(sprintf('Awake or Sedated? Dir name is: %s', data.info.dir), 'Sedated?', 'Awake', 'Sedated', 'Awake'); 
+switch sed
+    case 'Sedated'
+        sedated_flag = 1; 
+    case 'Awake'
+        sedated_flag = 0; 
+end
 %% Get appropriate calibration file
 calib = data.FPL.FPLearData;
 res.calib = calib; 
@@ -598,7 +607,15 @@ res.durs = durs;
 data.result = result; 
 data.res = res;
 %% Export:
-cd([datapath, filesep, 'Processed']);
+if sedated_flag
+    if ~exist([datapath, filesep, 'Processed', filesep, 'Sedated' filesep], 'dir')
+        mkdir([datapath, filesep, 'Processed', filesep, 'Sedated' filesep])
+    end
+    cd([datapath, filesep, 'Processed', filesep, 'Sedated', filesep]);
+else
+    cd([datapath, filesep, 'Processed', filesep]);
+end
+
 fname = [subj,'_SFOAEswept_',condition, file(end-24:end-4) ];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
 save(fname,'data')

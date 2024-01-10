@@ -4,8 +4,8 @@
 clear;
 
 %% Enter information here: 
-subj = 'Q427';                  % e.g., 'Q440'
-condition = 'PTS_2wksPost';         % e.g., 'Baseline', 'CA_2wksPost'
+subj = 'Q443';                  % e.g., 'Q440'
+condition = 'Baseline';         % e.g., 'Baseline', 'CA_2wksPost'
 location = 0;                   % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
@@ -19,7 +19,8 @@ elseif location == 0 % Mac
     prefix = '/Volumes/SNH/';
 end
 
-suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'SFOAEswept', filesep, 'Chin', filesep, condition,filesep,subj];
+suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'SFOAEswept', ...
+    filesep, 'Chin', filesep, condition,filesep,subj];
 datapath = [prefix,suffix];
 
 SFanalysis;

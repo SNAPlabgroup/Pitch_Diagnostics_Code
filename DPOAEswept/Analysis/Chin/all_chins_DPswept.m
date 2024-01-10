@@ -197,6 +197,7 @@ plot(mean(GE_Post_f2,1, 'omitNaN'),mean(GE_Post_oae,1, 'omitNaN'),'Color',gre,'l
 plot(mean(GE_Post_f2,1, 'omitNaN'),mean(GE_Post_nf,1, 'omitNaN'),'--', 'Color',gre,'linewidth',1.5);
 plot(mean(GE_Post_centerfreq,1, 'omitNaN'),mean(GE_Post_oaesum,1, 'omitNaN'),'*','Color',gre,'MarkerSize',10,'LineWidth',2);
 hold off;
+
 ylim([-40, 50])
 xlim([.5, 16])
 xticks([.5, 1, 2, 4, 8, 16])

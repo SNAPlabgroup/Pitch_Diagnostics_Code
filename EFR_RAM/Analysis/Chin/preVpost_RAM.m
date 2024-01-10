@@ -2,8 +2,8 @@
 
 clear;
 
-subj = 'Q427';
-conditions = {'Baseline', 'PTS_2wksPost'};
+subj = 'Q443';
+conditions = {'Baseline', 'Baseline'};
 
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
@@ -17,7 +17,8 @@ end
 
 for k = 1:length(conditions)
     condition = conditions{k};
-    suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'EFR_RAM', filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Processed'];
+    suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep, 'EFR_RAM', ...
+        filesep, 'Chin', filesep, condition, filesep, subj, filesep, 'Processed'];
     datapath = [prefix,suffix];
     
     % Import Data

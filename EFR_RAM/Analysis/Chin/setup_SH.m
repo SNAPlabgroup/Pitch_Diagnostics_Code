@@ -3,8 +3,8 @@
 
 clear;
 
-condition = 'PTS_2wksPost';
-subj = 'Q427';
+condition = 'Baseline';
+subj = 'Q443';
 loc = 0; 
 
 if loc == 1

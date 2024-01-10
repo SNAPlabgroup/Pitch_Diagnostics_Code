@@ -156,20 +156,20 @@ ylim([0,1])
 ylabel('PLV','FontWeight','bold')
 xlabel('Frequency(Hz)','FontWeight','bold')
 
-subplot(2,2,4)
-hold on;
-title('GE | RAM - 25% Duty Cycle','FontSize',14);
-plot(mean(GE_Pre_f_all,1, 'omitNaN'),mean(GE_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',1.5);
-plot(mean(GE_Pre_LOCS_all,1, 'omitNaN'),mean(GE_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',2);
-
-hold on;
-plot(mean(GE_Post_f_all,1, 'omitNaN'),mean(GE_Post_PLV_env_all,1, 'omitNaN'),'Color',gre,'linewidth',1.5);
-plot(mean(GE_Post_LOCS_all,1, 'omitNaN'),mean(GE_Post_PKS_all,1, 'omitNaN'),'*','Color',gre,'MarkerSize',10,'LineWidth',2);
-
-hold off;
-ylim([0,1])
-ylabel('PLV','FontWeight','bold')
-xlabel('Frequency(Hz)','FontWeight','bold')
+% subplot(2,2,4)
+% hold on;
+% title('GE | RAM - 25% Duty Cycle','FontSize',14);
+% plot(mean(GE_Pre_f_all,1, 'omitNaN'),mean(GE_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',1.5);
+% plot(mean(GE_Pre_LOCS_all,1, 'omitNaN'),mean(GE_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',2);
+% 
+% hold on;
+% plot(mean(GE_Post_f_all,1, 'omitNaN'),mean(GE_Post_PLV_env_all,1, 'omitNaN'),'Color',gre,'linewidth',1.5);
+% plot(mean(GE_Post_LOCS_all,1, 'omitNaN'),mean(GE_Post_PKS_all,1, 'omitNaN'),'*','Color',gre,'MarkerSize',10,'LineWidth',2);
+% 
+% hold off;
+% ylim([0,1])
+% ylabel('PLV','FontWeight','bold')
+% xlabel('Frequency(Hz)','FontWeight','bold')
 
 
 
@@ -215,15 +215,15 @@ xlabel('Time(s)','FontWeight','bold');
 ylabel('Amplitude \muV','FontWeight','bold')
 hold off
 
-subplot(2,2,4)
-axes('Units', 'Normalized', 'Position',[.77 .325 .12 .1])
-box on
-hold on
-plot(mean(GE_Pre_t_all,1, 'omitNaN'), mean(GE_Pre_T_env_all,1, 'omitNaN'),'Color',yel, 'LineWidth',2);
-plot(mean(GE_Post_t_all,1, 'omitNaN'), mean(GE_Post_T_env_all,1, 'omitNaN'),'Color',yel, 'LineWidth',2);
-xlim([0.3,.4]);
-ylim([-2,2]);
-yticks([-1,0,1])
-xlabel('Time(s)','FontWeight','bold');
-ylabel('Amplitude \muV','FontWeight','bold')
-hold off
+% subplot(2,2,4)
+% axes('Units', 'Normalized', 'Position',[.77 .325 .12 .1])
+% box on
+% hold on
+% plot(mean(GE_Pre_t_all,1, 'omitNaN'), mean(GE_Pre_T_env_all,1, 'omitNaN'),'Color',yel, 'LineWidth',2);
+% plot(mean(GE_Post_t_all,1, 'omitNaN'), mean(GE_Post_T_env_all,1, 'omitNaN'),'Color',yel, 'LineWidth',2);
+% xlim([0.3,.4]);
+% ylim([-2,2]);
+% yticks([-1,0,1])
+% xlabel('Time(s)','FontWeight','bold');
+% ylabel('Amplitude \muV','FontWeight','bold')
+% hold off
