@@ -39,9 +39,9 @@ select = paramlist(revList(end-6:end));
 
 %% Should be the same in trial audio and here for accurate thresholds
 minparam = 1;
-maxparam = 40;
+maxparam = 50;
 params = minparam:maxparam;
-F0DLs = logspace(log10(.25), log10(20), numel(params));
+F0DLs = logspace(log10(.15), log10(20), numel(params));
 
 thresh_mean = mean(F0DLs(select));
 thresh_std = std(F0DLs(select))/sqrt(7);

@@ -16,13 +16,13 @@ addpath(pwd)
 % datapath = '../../../../Data/F0DL/SNAPLab/Pilot/subjResponses/';
 %can automate this later
 condition = 'YNH';
-subj = 'S360';
+subj = 'S365';
 % dirs = ["VMA_RightEar"];
 local = 0;
 plot_on = 1;
 discard_n = 0;
-increm = 40;
-range_F0DL = [.25,30];
+increm = 50;
+range_F0DL = [.15,30];
 ytik = logspace(log10(range_F0DL(1)), log10(range_F0DL(2)), increm); %F0DL to test
 ytik = ytik(1:9:end);
 ytik = round(ytik,2);
@@ -30,7 +30,7 @@ ylabs = num2str(ytik);
 
 if ispc && ~local
     %figure out what's best later
-    prefix = 'A:/Pitch_Study/Pitch_Diagnostics_SH_AS/F0DL/Human/';
+    prefix = 'A:/Pitch_Study/Data/';
 elseif ~local
     [~,uname] = unix('whoami');
     uname = uname(1:end-1);
@@ -118,13 +118,19 @@ output_geo(:,1) = B;
 output_hari(:,2) = output_hari(I,2);
 output_hari(:,1) = B;
 
+%%
+output_geo(:,2) = output_geo(:,2);
+output_hari(:,2) = output_hari(:,2);
+
 %% Calculate estimated psychometric function for mean of runs
 
 %consolidate runs
-means_geo = analysis.squeezeMean(output_geo);
+means_geo = analysis.squeezeMean(output_geo,1);
 means_geo = means_geo(:,1:2);
-means_hari = analysis.squeezeMean(output_hari);
+means_geo(:,2) = 10.^means_geo(:,2);
+means_hari = analysis.squeezeMean(output_hari,1);
 means_hari = means_hari(:,1:2);
+means_hari(:,2) = 10.^means_hari(:,2);
 ranks = unique(means_geo(:,1))+0.5;
 xtik = ranks;
 

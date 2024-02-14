@@ -1,4 +1,4 @@
-function [] = getSpectF0DL(sig,BW,Fs,DR,spectType,sigName)
+function [] = getSpect(sig,BW,Fs,DR,spectType,sigName)
 %Modified version of spectrogram_BW_DR.m from Heinz
 %Added an FFT for better visualization of peaks 
 
@@ -45,7 +45,7 @@ Nfft = max([256 2^(floor(log2(Nwindow))+1)]);
 [Sgram,SG_Freq_Hz,SG_Time_sec] = spectrogram(sig,Nwindow,Noverlap,Nfft,Fs); 
 
 nfft_spect = max([2048, 2^(floor(log2(length(sig))+1))]);
-% [DFTsig, DFTfreq_Hz, dataStruct, ~] = stimGen.compute_dft(sig,Fs,[],[],nfft_spect,spectType);
+[DFTsig, DFTfreq_Hz, dataStruct, ~] = compute_dft(sig,Fs,[],[],nfft_spect,spectType);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,14 +76,14 @@ fig_xlength_inches = 7;
 fig_ylength_inches = 8;
 set(gcf,'Position',[fig_xcorner_inches fig_ycorner_inches fig_xlength_inches fig_ylength_inches]);
 
-h1 = subplot(3,1,[1 2]);
+h1 = subplot(4,1,[1 2]);
 surf(SG_Time_sec,SG_Freq_Hz,Sgram_dB,'EdgeColor','none');  % These commands are from MATLAB's help on "spectrogram"
-axis xy; axis tight; colormap(flip(gray)); view(0,90);
+axis xy; axis tight; colormap(parula); view(0,90);
 % title(sprintf('Spectrogram [BW = %.f Hz; Dynamic Range = %.f dB]',BW,DR),'FontSize',LabelFontSize)
-title([sigName]);
-% xlabel('Time (sec)','FontSize',LabelFontSize);
-ylabel('Frequency (Hz)','FontSize',LabelFontSize,'FontWeight','bold');
-ylim([0 1800])
+title(['Spectrogram:',sigName]);
+xlabel('Time (sec)','FontSize',LabelFontSize);
+ylabel('Frequency (Hz)','FontSize',LabelFontSize);
+ylim([0 5000])
 xlim([0 max(time_signal_sec)])
 set(h1,'FontSize',AnnotationFontSize)  % set font size
 %% Manipulate the position of FIG1 to use space efficiently
@@ -95,40 +95,43 @@ h1pos=get(h1,'pos');
 % set(h1,'pos',h1pos)  % set the new FIG1 position
 
 % figure(2);clf
-h2 = subplot(313);
-plot(time_signal_sec,sig,'k','linewidth',.5)
-ylabel('Amplitude','FontSize',LabelFontSize,'FontWeight','bold')
-xlabel('Time (sec)','FontSize',LabelFontSize,'FontWeight','bold')
+h2 = subplot(413);
+plot(time_signal_sec,sig)
+ylabel('Amplitude','FontSize',LabelFontSize)
+xlabel('Time (sec)','FontSize',LabelFontSize)
 xlim([0 max(time_signal_sec)])
-ylim([-1.01*max(abs(sig)),1.01*max(abs(sig))])
 title('Signal waveform','FontSize',LabelFontSize)
 set(h2,'FontSize',AnnotationFontSize)
 linkaxes([h1,h2],'x')
 format lonG
-% %plot spectrum:
-% h3 = subplot(414);
-% plot(DFTfreq_Hz,DFTsig)
-% ylabel('Amplitude','FontSize',LabelFontSize)
-% xlabel('Frequency (Hz)','FontSize',LabelFontSize)
-% xlim([0 5000])
-% xticks(440:440:max(DFTfreq_Hz));
-% title('FFT','FontSize',LabelFontSize)
-% set(h3,'FontSize',AnnotationFontSize)
-% 
-% ax = ancestor(h3, 'axes');
-% ax.XAxis.Exponent = 0;
-% %% Manipulate the position of FIG2 to match width of FIG1
-% set(h2,'Units','norm')  % use normalized units
+%plot spectrum:
+h3 = subplot(414);
+plot(DFTfreq_Hz,DFTsig)
+ylabel('Amplitude','FontSize',LabelFontSize)
+xlabel('Frequency (Hz)','FontSize',LabelFontSize)
+xlim([0 5000])
+
+if strcmp(spectType, 'dB')
+ylim([-100,100]);
+end
+xticks(440:440:max(DFTfreq_Hz));
+title('FFT','FontSize',LabelFontSize)
+set(h3,'FontSize',AnnotationFontSize)
+
+ax = ancestor(h3, 'axes');
+ax.XAxis.Exponent = 0;
+%% Manipulate the position of FIG2 to match width of FIG1
+set(h2,'Units','norm')  % use normalized units
 h2pos=get(h2,'pos');
 h2pos(2) = h2pos(2)-.03;
-% set(h3,'Units','norm')  % use normalized units
-% h3pos=get(h3,'pos');
-% h3pos(2) = h3pos(2)-.045;
-% %  h2pos(1) = h1pos(1);  % set FIG1 xcorner equal to FIG1 
-% % % h2pos(3) = h1pos(3);  % set FIG1 xlength equal to FIG1 
-% % % % h2pos(2)=.08;
-% set(h2,'pos',h2pos)  % set the new FIG2 position
-% set(h3,'pos',h3pos)  % set the new FIG3 position
+set(h3,'Units','norm')  % use normalized units
+h3pos=get(h3,'pos');
+h3pos(2) = h3pos(2)-.045;
+%  h2pos(1) = h1pos(1);  % set FIG1 xcorner equal to FIG1 
+% % h2pos(3) = h1pos(3);  % set FIG1 xlength equal to FIG1 
+% % % h2pos(2)=.08;
+set(h2,'pos',h2pos)  % set the new FIG2 position
+set(h3,'pos',h3pos)  % set the new FIG3 position
 
 % Listen to the sound
 %sound(sig,Fs)
