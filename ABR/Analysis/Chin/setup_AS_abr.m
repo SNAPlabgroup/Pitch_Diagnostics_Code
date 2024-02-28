@@ -6,7 +6,7 @@ clear;
 condition = 'Baseline';
 subj = 'Q450';
 
-uname = 'sivaprakasaman';
+uname = 'asivapr';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 suffix = [condition,'/',subj];
 datapath = [prefix,suffix];

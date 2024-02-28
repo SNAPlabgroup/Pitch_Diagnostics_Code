@@ -49,10 +49,13 @@ for f = 1:length(freqs)
         %Filter [300,3e3] (match SR560 limit)
 
         %TODO Test this
+        all_trials = all_trials-mean(all_trials,'all');
         all_trials  = all_trials'./x.AD_Data.Gain;
         all_trials = resample(all_trials, fs, round(fs_orig));
         [b,a] = butter(4,[300,3e3]./(fs/2));
         all_trials = filtfilt(b,a,all_trials);
+        
+
 
         %Separate into pos/negs
         all_pos = all_trials(:,1:2:end);
@@ -67,25 +70,58 @@ for f = 1:length(freqs)
         pos_boot_2 = helper.boots(all_pos(:,2:2:end), samps, iters);
         neg_boot_2 = helper.boots(all_neg(:,2:2:end), samps, iters);
         combined_2 = (pos_boot_2 + neg_boot_2)/2;
+        
+        
+        %comb filter
+        q = 10; %sharpness
+        bw = (freqs(f)/(fs/2))/q;
+        [b,a] = iircomb(fs/freqs(f),bw,'notch');
+%         [b,a] = iirnotch(freqs(f)/(fs/2),bw);
+        
+        combined_1 = filtfilt(b,a,combined_1);
+        combined_2 = filtfilt(b,a,combined_2);
 
         %Cross-correlate first half w/second half
         xcor_t = helper.xcorr_matrix(combined_1,combined_2);
-
+       
+        wforms(:,d) = mean((combined_1+combined_2)./2,2);
+        
         %points at zero lag
         midpoint = ceil(size(xcor_t,1)/2);
         cor = mean(xcor_t(midpoint,:),2); %maybe can use the variability here too?
         
         cor_temp(d) = cor;
 %         cor_temp2(d) = mean(mscohere(combined_1,combined_2),'all');
-
     end 
     
+    %sort waveforms by increasing level
+    [lev,I] = sort(lev); 
+    wforms = wforms(:,I);
+    cor_temp = cor_temp(I);
+    
+
     cor_temp = cor_temp/max(cor_temp); %normalize
     cor_fit = fit(lev', cor_temp',ft);
 
     %Threshold estimate is the transition point of the sigmoid: 
     thresh(f) = cor_fit.c;
     
-    %Sort by level and save
     
+    clr_no = [0,0,0,.3];
+    clr_yes = [0,0,0,1];
+
+    figure;
+    buff = 1.5*max(max(wforms))*(1:size(wforms,2));
+    wform_plot = wforms+buff;
+    hold on
+    plot(wform_plot(:,lev>thresh),'color',clr_yes,'linewidth',2);
+    plot(wform_plot(:,lev<=thresh),'color',clr_no,'linewidth',2);
+    hold off
+    yticks(mean(wform_plot));
+    yticklabels(round(lev));
+    ylabel('Sound Level (dB SPL)');
+    title(['Frequency = ', num2str(freqs(f)), ' Hz']);
+    
+%     yline(thresh,'r--','linewidth',2);
+        
 end 
