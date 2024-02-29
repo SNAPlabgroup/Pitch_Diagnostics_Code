@@ -53,7 +53,7 @@ for f = 1:length(freqs)
         all_trials  = all_trials'./x.AD_Data.Gain;
         all_trials = resample(all_trials, fs, round(fs_orig));
         [b,a] = butter(4,[300,3e3]./(fs/2));
-        all_trials = filtfilt(b,a,all_trials);
+%         all_trials = filtfilt(b,a,all_trials);
         
 
 
@@ -77,9 +77,9 @@ for f = 1:length(freqs)
         bw = (freqs(f)/(fs/2))/q;
         [b,a] = iircomb(fs/freqs(f),bw,'notch');
 %         [b,a] = iirnotch(freqs(f)/(fs/2),bw);
-        
-        combined_1 = filtfilt(b,a,combined_1);
-        combined_2 = filtfilt(b,a,combined_2);
+%         
+%         combined_1 = filtfilt(b,a,combined_1);
+%         combined_2 = filtfilt(b,a,combined_2);
 
         %Cross-correlate first half w/second half
         xcor_t = helper.xcorr_matrix(combined_1,combined_2);
