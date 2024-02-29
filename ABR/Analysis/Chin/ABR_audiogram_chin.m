@@ -28,13 +28,18 @@ ft = fittype(sigmoid,'options',fops);
 
 
 %% Load the files for a given freq
+% abr_vis = tiledlayout(ceil(length(freqs)/3),3)
+% fit_vis = tiledlayout(ceil(length(freqs)/3),3)
+
+abr_vis = figure();
+fit_vis = figure();
 
 for f = 1:length(freqs)
 
     %find files
     datafiles = {dir(fullfile(cd,['p*',num2str(freqs(f)),'*.mat'])).name};
     lev = [];
-
+    wforms=[];
     for d = 1:length(datafiles)
         load(datafiles{d})
         fs_orig = x.Stimuli.RPsamprate_Hz;
@@ -53,7 +58,7 @@ for f = 1:length(freqs)
         all_trials  = all_trials'./x.AD_Data.Gain;
         all_trials = resample(all_trials, fs, round(fs_orig));
         [b,a] = butter(4,[300,3e3]./(fs/2));
-%         all_trials = filtfilt(b,a,all_trials);
+        all_trials = filtfilt(b,a,all_trials);
         
 
 
@@ -73,9 +78,9 @@ for f = 1:length(freqs)
         
         
         %comb filter
-        q = 10; %sharpness
-        bw = (freqs(f)/(fs/2))/q;
-        [b,a] = iircomb(fs/freqs(f),bw,'notch');
+%         q =90; %sharpness
+%         bw = (freqs(f)/(fs/2))/q;
+%         [b,a] = iircomb(fs/freqs(f),bw,'notch');
 %         [b,a] = iirnotch(freqs(f)/(fs/2),bw);
 %         
 %         combined_1 = filtfilt(b,a,combined_1);
@@ -83,8 +88,8 @@ for f = 1:length(freqs)
 
         %Cross-correlate first half w/second half
         xcor_t = helper.xcorr_matrix(combined_1,combined_2);
-       
-        wforms(:,d) = mean((combined_1+combined_2)./2,2);
+        
+        wforms(:,d) = mean(combined_1+combined_2,2);
         
         %points at zero lag
         midpoint = ceil(size(xcor_t,1)/2);
@@ -99,29 +104,57 @@ for f = 1:length(freqs)
     wforms = wforms(:,I);
     cor_temp = cor_temp(I);
     
-
     cor_temp = cor_temp/max(cor_temp); %normalize
     cor_fit = fit(lev', cor_temp',ft);
 
     %Threshold estimate is the transition point of the sigmoid: 
-    thresh(f) = cor_fit.c;
+%     thresh(f) = cor_fit.c;
     
+    tol = 4;
+    c_y = (cor_fit.a+cor_fit.d)/2;
+    y = (c_y-cor_fit.d)*tol;
+    thresh(f) = cor_fit.c-y/cor_fit.b;
     
     clr_no = [0,0,0,.3];
     clr_yes = [0,0,0,1];
 
-    figure;
+    figure(abr_vis);
+    subplot(ceil(length(freqs)/3),3,f);
     buff = 1.5*max(max(wforms))*(1:size(wforms,2));
     wform_plot = wforms+buff;
     hold on
-    plot(wform_plot(:,lev>thresh),'color',clr_yes,'linewidth',2);
-    plot(wform_plot(:,lev<=thresh),'color',clr_no,'linewidth',2);
+    plot(wform_plot(:,lev>thresh(f)),'color',clr_yes,'linewidth',2);
+    plot(wform_plot(:,lev<=thresh(f)),'color',clr_no,'linewidth',2);
     hold off
     yticks(mean(wform_plot));
     yticklabels(round(lev));
     ylabel('Sound Level (dB SPL)');
     title(['Frequency = ', num2str(freqs(f)), ' Hz']);
     
+    
+    figure(fit_vis);
+    subplot(ceil(length(freqs)/3),3,f);
+    hold on
+    title(['Frequency = ', num2str(freqs(f)), ' Hz']);
+    plot(1:80,cor_fit(1:80),'--k','linewidth',1.5);
+    plot(lev,cor_temp,'*b');
+    xline(thresh(f),'r');
+    xticks(0:10:80);
+    xtickangle(90);
+    xlim([0,80]);
+    xlabel('Level (dB SPL)');
+    hold off
+    grid on
 %     yline(thresh,'r--','linewidth',2);
-        
 end 
+
+
+figure(abr_vis)
+subplot(ceil(length(freqs)/3),3,f+1);
+plot(freqs,thresh,'*-k');
+grid on;
+xticks(freqs);
+set(gca,'xscale','log');
+yticks(0:10:80);
+ylim([0,80]);
+
