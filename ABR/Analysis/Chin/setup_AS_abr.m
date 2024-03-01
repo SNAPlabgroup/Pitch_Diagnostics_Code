@@ -3,10 +3,10 @@
 close all;
 clear;
 
-condition = 'Baseline';
+condition = 'PTS_2wksPost';
 subj = 'Q428';
 
-uname = 'asivapr';
+uname = 'sivaprakasaman';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 suffix = [condition,'/',subj];
 datapath = [prefix,suffix];

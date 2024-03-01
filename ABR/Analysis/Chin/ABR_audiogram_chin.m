@@ -6,8 +6,8 @@
 addpath(pwd);
 
 fs = 8e3; %resampled to 8e3
-samps = 200;
-iters = 200;
+samps = 400;
+iters = 100;
 
 %% Change into directory
 cd(datapath)
@@ -18,10 +18,15 @@ maximum = .8;
 mid =6;
 steep = 1.3;
 start = 0.01;
-sigmoid = 'a./(1+exp(-b*(x-c)))+d';
+sigmoid = '(a-d)./(1+exp(-b*(x-c)))+d';
 startPoints = [maximum, steep, mid, start];
-fops = fitoptions('Method','NonLinearLeastSquares','Lower',[-inf, 0, 1, 0],'Upper',[1, inf, 80, inf],'StartPoint',startPoints);
+fops = fitoptions('Method','NonLinearLeastSquares','Lower',[-inf, 0, 1, 0],'Upper',[1, inf, 100, inf],'StartPoint',startPoints);
 ft = fittype(sigmoid,'options',fops);
+
+% sigmoid = 'a./(1+exp(-b*(x-c)))+d';
+% startPoints = [maximum, steep, mid, start];
+% fops = fitoptions('Method','NonLinearLeastSquares','Lower',[-inf, 0, 1],'Upper',[1, inf, 80],'StartPoint',startPoints);
+% ft = fittype(sigmoid,'options',fops);
 
 % sig_fit = fit(ranks_ord, sig_data,ft);
 % sig_model = sig_fit(x);
@@ -57,10 +62,8 @@ for f = 1:length(freqs)
         all_trials = all_trials-mean(all_trials,'all');
         all_trials  = all_trials'./x.AD_Data.Gain;
         all_trials = resample(all_trials, fs, round(fs_orig));
-        [b,a] = butter(4,[300,3e3]./(fs/2));
-        all_trials = filtfilt(b,a,all_trials);
-        
-
+%         [b,a] = butter(4,[300,3e3]./(fs/2));
+%         all_trials = filtfilt(b,a,all_trials);
 
         %Separate into pos/negs
         all_pos = all_trials(:,1:2:end);
@@ -93,9 +96,10 @@ for f = 1:length(freqs)
         
         %points at zero lag
         midpoint = ceil(size(xcor_t,1)/2);
-        cor = mean(xcor_t(midpoint,:),2); %maybe can use the variability here too?
-        
+        cor = mean(xcor_t(midpoint,:)); %maybe can use the variability here too?
+        cor_err = std(xcor_t(midpoint,:));
         cor_temp(d) = cor;
+        cor_err_temp(d) = cor_err;
 %         cor_temp2(d) = mean(mscohere(combined_1,combined_2),'all');
     end 
     
@@ -105,15 +109,25 @@ for f = 1:length(freqs)
     cor_temp = cor_temp(I);
     
     cor_temp = cor_temp/max(cor_temp); %normalize
-    cor_fit = fit(lev', cor_temp',ft);
+    cor_fit = fit(lev', cor_temp',ft)
 
     %Threshold estimate is the transition point of the sigmoid: 
 %     thresh(f) = cor_fit.c;
+%     
+%     tol = 4;
+%     c_y = (cor_fit.a+cor_fit.d)/2;
+%     y = (c_y-cor_fit.d)*tol;
+%     thresh(f) = cor_fit.c-y/cor_fit.b;
+
+    %Find x value on sigmoid that is 25% of the way to transition point
     
-    tol = 4;
-    c_y = (cor_fit.a+cor_fit.d)/2;
-    y = (c_y-cor_fit.d)*tol;
-    thresh(f) = cor_fit.c-y/cor_fit.b;
+    tol = .25;
+    y_transit = (cor_fit.a+cor_fit.d)/2;
+    y_thresh = cor_fit.d+tol*(y_transit-cor_fit.d);
+
+    %invert
+    thresh(f) = cor_fit.c-log((cor_fit.a-cor_fit.d)/(y_thresh-cor_fit.d)-1)/cor_fit.b;
+
     
     clr_no = [0,0,0,.3];
     clr_yes = [0,0,0,1];
@@ -128,17 +142,18 @@ for f = 1:length(freqs)
     hold off
     yticks(mean(wform_plot));
     yticklabels(round(lev));
+    ylim([min(min(wform_plot)),max(max(wform_plot))])
     ylabel('Sound Level (dB SPL)');
     title(['Frequency = ', num2str(freqs(f)), ' Hz']);
-    
     
     figure(fit_vis);
     subplot(ceil(length(freqs)/3),3,f);
     hold on
     title(['Frequency = ', num2str(freqs(f)), ' Hz']);
-    plot(1:80,cor_fit(1:80),'--k','linewidth',1.5);
-    plot(lev,cor_temp,'*b');
-    xline(thresh(f),'r');
+    plot(1:80,cor_fit(1:80),'--k','linewidth',2);
+    errorbar(lev,cor_temp,cor_err_temp,'.b','linewidth',1.5,'markersize',10);
+    ylim([0,1])
+    xline(thresh(f),'r','linewidth',2);
     xticks(0:10:80);
     xtickangle(90);
     xlim([0,80]);
