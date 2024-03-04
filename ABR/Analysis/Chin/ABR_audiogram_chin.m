@@ -45,6 +45,9 @@ for f = 1:length(freqs)
     datafiles = {dir(fullfile(cd,['p*',num2str(freqs(f)),'*.mat'])).name};
     lev = [];
     wforms=[];
+    cor_temp = [];
+    cor_err_temp = [];
+    
     for d = 1:length(datafiles)
         load(datafiles{d})
         fs_orig = x.Stimuli.RPsamprate_Hz;
@@ -121,7 +124,7 @@ for f = 1:length(freqs)
 
     %Find x value on sigmoid that is 25% of the way to transition point
     
-    tol = .25;
+    tol = .20;
     y_transit = (cor_fit.a+cor_fit.d)/2;
     y_thresh = cor_fit.d+tol*(y_transit-cor_fit.d);
 
@@ -136,9 +139,14 @@ for f = 1:length(freqs)
     subplot(ceil(length(freqs)/3),3,f);
     buff = 1.5*max(max(wforms))*(1:size(wforms,2));
     wform_plot = wforms+buff;
+    
+    t = (1:size(wforms,1))/fs;
+    t = t*1e3; %time in ms
+    
     hold on
-    plot(wform_plot(:,lev>thresh(f)),'color',clr_yes,'linewidth',2);
-    plot(wform_plot(:,lev<=thresh(f)),'color',clr_no,'linewidth',2);
+    plot(t,wform_plot(:,lev>thresh(f)),'color',clr_yes,'linewidth',2);
+    plot(t,wform_plot(:,lev<=thresh(f)),'color',clr_no,'linewidth',2);
+    xlim([0,30])
     hold off
     yticks(mean(wform_plot));
     yticklabels(round(lev));
