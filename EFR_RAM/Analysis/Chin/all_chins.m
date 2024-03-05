@@ -2,8 +2,8 @@
 
 clear;
 
-chins = {'Q412', 'Q423', 'Q424', 'Q426', 'Q430', 'Q431', 'Q427', 'Q428'};
-group = {'TTS', 'TTS', 'TTS', 'TTS', 'CA', 'CA', 'PTS', 'PTS'};
+chins = {'Q412', 'Q424', 'Q426', 'Q430', 'Q431', 'Q440', 'Q441', 'Q427', 'Q428', 'Q425', 'Q421', 'Q422'};
+group = {'TTS', 'TTS', 'TTS', 'CA', 'CA', 'CA', 'CA','PTS', 'PTS', 'CA', 'CA',  'PTS'};
 
 conditions = {'Baseline', '_2wksPost'};
 
@@ -90,15 +90,40 @@ for k = 1:length(chins)
     
 end
 
-%% Get averages
+%% Get ratio
+% CA_pre_ratio = sum(CA_Pre_PKS_all(:, 3:8),2)./sum(CA_Pre_PKS_all(:,1:2),2);
+% CA_post_ratio = sum(CA_Post_PKS_all(:, 3:8),2)./sum(CA_Post_PKS_all(:,1:2),2);
+% PTS_pre_ratio = sum(PTS_Pre_PKS_all(:, 3:8),2)./sum(PTS_Pre_PKS_all(:,1:2),2);
+% PTS_post_ratio = sum(PTS_Post_PKS_all(:, 3:8),2)./sum(PTS_Post_PKS_all(:,1:2),2);
+% TTS_pre_ratio = sum(TTS_Pre_PKS_all(:, 3:8),2)./sum(TTS_Pre_PKS_all(:,1:2),2);
+% TTS_post_ratio = sum(TTS_Post_PKS_all(:, 3:8),2)./sum(TTS_Post_PKS_all(:,1:2),2);
+
+
+harms_locs(1) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,1)); 
+harms_locs(2) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,2)); 
+harms_locs(3) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,3)); 
+harms_locs(4) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,4)); 
+harms_locs(5) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,5)); 
+% harms_locs(6) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,6)); 
+% harms_locs(7) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,7)); 
+% harms_locs(8) = find(PTS_Pre_f_all(1,:) == PTS_Pre_LOCS_all(1,8)); 
+
+
+
+CA_pre_ratio = sum(CA_Pre_PLV_env_all(:, harms_locs),2); %./sum(CA_Pre_PKS_all(:,1:3),2);
+CA_post_ratio = sum(CA_Post_PLV_env_all(:, harms_locs),2); %./sum(CA_Post_PKS_all(:,1:3),2);
+PTS_pre_ratio = sum(PTS_Pre_PLV_env_all(:, harms_locs),2); %./sum(PTS_Pre_PKS_all(:,1:3),2);
+PTS_post_ratio = sum(PTS_Post_PLV_env_all(:, harms_locs),2); %./sum(PTS_Post_PKS_all(:,1:3),2);
+TTS_pre_ratio = sum(TTS_Pre_PLV_env_all(:, harms_locs),2); %./sum(TTS_Pre_PKS_all(:,1:3),2);
+TTS_post_ratio = sum(TTS_Post_PLV_env_all(:, harms_locs),2); %./sum(TTS_Post_PKS_all(:,1:3),2);
 
 %% Plot Data
 
 blck = [0.25, 0.25, 0.25];
-rd = [216, 27, 96, 75]./255; %TTS
-blu = [30, 136, 229, 75]./255; %CA
-yel = [255, 193, 7, 75]./255; %PTS
-gre = [115, 177, 117, 57]./255; %GE
+rd = [217, 95, 2]./255; %TTS
+blu = [117, 112, 179]./255; %CA
+yel = [27, 158, 119]./255; %PTS
+gre = [115, 177, 117]./255; %GE
 
 %Time Domain
 xstart = .2;
@@ -111,50 +136,53 @@ set(gcf, 'Units', 'inches', 'Position', [1, 1, 16, 12])
 % TTS
 subplot(2,2,1)
 hold on;
-title('TTS | RAM - 25% Duty Cycle','FontSize',14);
-plot(mean(TTS_Pre_f_all,1, 'omitNaN'),mean(TTS_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',1.5);
-plot(mean(TTS_Pre_LOCS_all,1, 'omitNaN'),mean(TTS_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',2);
+set(gca, 'FontSize', 20)
+title('Synaptopathy','FontSize',24, 'Color', rd);
+plot(mean(TTS_Pre_f_all,1, 'omitNaN'),mean(TTS_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',3);
+plot(mean(TTS_Pre_LOCS_all,1, 'omitNaN'),mean(TTS_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',3);
 
 hold on;
-plot(mean(TTS_Post_f_all,1, 'omitNaN'),mean(TTS_Post_PLV_env_all,1, 'omitNaN'),'Color',rd,'linewidth',1.5);
-plot(mean(TTS_Post_LOCS_all,1, 'omitNaN'),mean(TTS_Post_PKS_all,1, 'omitNaN'),'*','Color',rd,'MarkerSize',10,'LineWidth',2);
+plot(mean(TTS_Post_f_all,1, 'omitNaN'),mean(TTS_Post_PLV_env_all,1, 'omitNaN'),'Color',rd,'linewidth',3);
+plot(mean(TTS_Post_LOCS_all,1, 'omitNaN'),mean(TTS_Post_PKS_all,1, 'omitNaN'),'*','Color',rd,'MarkerSize',10,'LineWidth',3);
 
 hold off;
 ylim([0,1])
 ylabel('PLV','FontWeight','bold')
-xlabel('Frequency(Hz)','FontWeight','bold')
+xlabel('Frequency (Hz)','FontWeight','bold')
 
 % Carbo
 subplot(2,2,3)
 hold on;
-title('CA | RAM - 25% Duty Cycle','FontSize',14);
-plot(mean(CA_Pre_f_all,1, 'omitNaN'),mean(CA_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',1.5);
-plot(mean(CA_Pre_LOCS_all,1, 'omitNaN'),mean(CA_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',2);
+set(gca, 'FontSize', 20)
+title('IHC Dysfunction','FontSize',24, 'Color', blu);
+plot(mean(CA_Pre_f_all,1, 'omitNaN'),mean(CA_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',3);
+plot(mean(CA_Pre_LOCS_all,1, 'omitNaN'),mean(CA_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',3);
 
 hold on;
-plot(mean(CA_Post_f_all,1, 'omitNaN'),mean(CA_Post_PLV_env_all,1, 'omitNaN'),'Color',blu,'linewidth',1.5);
-plot(mean(CA_Post_LOCS_all,1, 'omitNaN'),mean(CA_Post_PKS_all,1, 'omitNaN'),'*','Color',blu,'MarkerSize',10,'LineWidth',2);
+plot(mean(CA_Post_f_all,1, 'omitNaN'),mean(CA_Post_PLV_env_all,1, 'omitNaN'),'Color',blu,'linewidth',3);
+plot(mean(CA_Post_LOCS_all,1, 'omitNaN'),mean(CA_Post_PKS_all,1, 'omitNaN'),'*','Color',blu,'MarkerSize',10,'LineWidth',3);
 
 hold off;
 ylim([0,1])
 ylabel('PLV','FontWeight','bold')
-xlabel('Frequency(Hz)','FontWeight','bold')
+xlabel('Frequency (Hz)','FontWeight','bold')
 
 % PTS
 subplot(2,2,2)
 hold on;
-title('PTS | RAM - 25% Duty Cycle','FontSize',14);
-plot(mean(PTS_Pre_f_all,1, 'omitNaN'),mean(PTS_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',1.5);
-plot(mean(PTS_Pre_LOCS_all,1, 'omitNaN'),mean(PTS_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',2);
+set(gca, 'FontSize', 20)
+title('Complex SNHL','FontSize',24, 'Color', yel);
+plot(mean(PTS_Pre_f_all,1, 'omitNaN'),mean(PTS_Pre_PLV_env_all,1, 'omitNaN'),'Color',blck,'linewidth',3);
+plot(mean(PTS_Pre_LOCS_all,1, 'omitNaN'),mean(PTS_Pre_PKS_all,1, 'omitNaN'),'*','Color',blck,'MarkerSize',10,'LineWidth',3);
 
 hold on;
-plot(mean(PTS_Post_f_all,1, 'omitNaN'),mean(PTS_Post_PLV_env_all,1, 'omitNaN'),'Color',yel,'linewidth',1.5);
-plot(mean(PTS_Post_LOCS_all,1, 'omitNaN'),mean(PTS_Post_PKS_all,1, 'omitNaN'),'*','Color',yel,'MarkerSize',10,'LineWidth',2);
+plot(mean(PTS_Post_f_all,1, 'omitNaN'),mean(PTS_Post_PLV_env_all,1, 'omitNaN'),'Color',yel,'linewidth',3);
+plot(mean(PTS_Post_LOCS_all,1, 'omitNaN'),mean(PTS_Post_PKS_all,1, 'omitNaN'),'*','Color',yel,'MarkerSize',10,'LineWidth',3);
 
 hold off;
 ylim([0,1])
 ylabel('PLV','FontWeight','bold')
-xlabel('Frequency(Hz)','FontWeight','bold')
+xlabel('Frequency (Hz)','FontWeight','bold')
 
 % subplot(2,2,4)
 % hold on;
@@ -172,18 +200,14 @@ xlabel('Frequency(Hz)','FontWeight','bold')
 % xlabel('Frequency(Hz)','FontWeight','bold')
 
 
-
-
-
-%% Time Domain
 subplot(2,2,1)
 axes('Units', 'Normalized', 'Position',[.33 .8 .12 .1])
 box on
 hold on
 plot(mean(TTS_Pre_t_all,1, 'omitNaN'), mean(TTS_Pre_T_env_all,1, 'omitNaN'),'Color',blck, 'LineWidth',2);
 plot(mean(TTS_Post_t_all,1, 'omitNaN'), mean(TTS_Post_T_env_all,1, 'omitNaN'),'Color',rd, 'LineWidth',2);
-xlim([0.3,.4]);
-ylim([-2,2]);
+xlim([0.3,.35]);
+ylim([-1.2,1.2]);
 yticks([-1,0,1])
 xlabel('Time(s)','FontWeight','bold');
 ylabel('Amplitude \muV','FontWeight','bold')
@@ -195,8 +219,8 @@ box on
 hold on
 plot(mean(CA_Pre_t_all,1, 'omitNaN'), mean(CA_Pre_T_env_all,1, 'omitNaN'),'Color',blck, 'LineWidth',2);
 plot(mean(CA_Post_t_all,1, 'omitNaN'), mean(CA_Post_T_env_all,1, 'omitNaN'),'Color',blu, 'LineWidth',2);
-xlim([0.3,.4]);
-ylim([-2,2]);
+xlim([0.3,.35]);
+ylim([-1.2,1.2]);
 yticks([-1,0,1])
 xlabel('Time(s)','FontWeight','bold');
 ylabel('Amplitude \muV','FontWeight','bold')
@@ -208,8 +232,8 @@ box on
 hold on
 plot(mean(PTS_Pre_t_all,1, 'omitNaN'), mean(PTS_Pre_T_env_all,1, 'omitNaN'),'Color',blck, 'LineWidth',2);
 plot(mean(PTS_Post_t_all,1, 'omitNaN'), mean(PTS_Post_T_env_all,1, 'omitNaN'),'Color',yel, 'LineWidth',2);
-xlim([0.3,.4]);
-ylim([-2,2]);
+xlim([0.3,.35]);
+ylim([-1.2,1.2]);
 yticks([-1,0,1])
 xlabel('Time(s)','FontWeight','bold');
 ylabel('Amplitude \muV','FontWeight','bold')
@@ -227,3 +251,29 @@ hold off
 % xlabel('Time(s)','FontWeight','bold');
 % ylabel('Amplitude \muV','FontWeight','bold')
 % hold off
+
+subplot(2,2,4)
+hold on; 
+for i = 1:TTS_count
+    plot([0,.5], [TTS_pre_ratio(i,1), TTS_post_ratio(i,1)], 'o-', 'Color', rd, 'linew',4, 'MarkerSize', 8)
+end
+for i = 1:CA_count
+    plot([1.5,2], [CA_pre_ratio(i,1), CA_post_ratio(i,1)], 'o-', 'Color', blu, 'linew',4, 'MarkerSize', 8)
+end
+for i = 1:PTS_count
+    plot([3,3.5], [PTS_pre_ratio(i,1), PTS_post_ratio(i,1)], 'o-', 'Color', yel, 'linew',4, 'MarkerSize', 8)
+end
+xlim([-.5,4])
+xticks([.25, 1.75, 3.25])
+xticklabels({'Syn','IHC','Complex'})
+ylabel('\Sigma{Harmonics 1:5}')
+set(gca, 'FontSize', 20, 'FontWeight', 'Bold')
+title('Pre-Post', 'FontSize', 24, 'FontWeight', 'Bold');
+grid on
+
+
+%%
+% 
+cd 'Figures'
+print -dpng -r600 Pre-Post-RAM
+cd .. 

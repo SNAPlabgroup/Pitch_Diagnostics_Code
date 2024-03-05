@@ -7,7 +7,7 @@
 clear;
 
 cwd = pwd; 
-subj = 'Q428';
+subj = 'Q443';
 conditions = {'Baseline', 'PTS_2wksPost'};
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
@@ -26,7 +26,7 @@ for k = 1:length(conditions)
     datapath = [prefix,suffix];
     
     % Import Data
-    cwd = pwd;
+ 
     cd(datapath)
     datafile = dir(fullfile(cd,[subj, '_MEMR_WB_' condition, '*.mat']));
     if length(datafile) < 1

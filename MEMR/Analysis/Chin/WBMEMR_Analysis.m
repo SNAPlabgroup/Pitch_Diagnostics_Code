@@ -24,6 +24,7 @@ else
 end
 
 stim = data.stim;
+stim.nel = data.info.version; 
 
 
 % SET CALIB FILE HERE

@@ -3,11 +3,10 @@
 %Here's where you can define your own parameters for input/output
 %directories.
 
-
 clear;
 
-subj = 'Q440';                                  %e.g., 'Q419'
-conditions = {'Baseline', 'Baseline', 'Baseline'};     % e.g. {'Baseline', 'PTS_2wksPost', 'Baseline', 'PTS_2wksPost'};
+subj = 'Q453';                                  %e.g., 'Q419'
+conditions = {'Baseline', 'Baseline'};     % e.g. {'Baseline', 'PTS_2wksPost', 'Baseline', 'PTS_2wksPost'};
 location = 0;                                   % 0 == mac, 1 == Desktop, 2 == SNAPlab
 uname = 'samhauser';
 

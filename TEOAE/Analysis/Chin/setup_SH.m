@@ -6,7 +6,7 @@
 
 clear;
 
-subj = 'Q422';
+subj = 'Q450';
 condition = 'Baseline';
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 

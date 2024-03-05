@@ -604,6 +604,13 @@ res.complex.oae = oae_complex; %not IFFT cleaned
 res.complex.nf = noise_complex;
 res.durs = durs; 
 
+res.theta = theta; 
+res.tau_pg = tau_pg; 
+res.f_pg = x; 
+res.Nsf = Nsf; 
+res.Qerb = Qerb; 
+res.r = r; 
+
 data.result = result; 
 data.res = res;
 %% Export:

@@ -38,7 +38,6 @@ fname_out = [file(1:end-4),'_matlab.mat'];
 cd(cwd);
 %% Data analysis & plotting:
 fs_orig = data.Stimuli.RPsamprate_Hz;
-fs = 8e3; %resample to 8kHz
 
 all_dat = cell2mat(data.AD_Data.AD_All_V{1,1}');
 all_dat = all_dat';
@@ -59,7 +58,7 @@ subset = 100;
 k_iters = 30;
 
 %only output things we want to look at
-[f, ~, ~, PLV_env, ~, ~, T_env] = helper.getSpectAverage(pos,neg, fs, subset, k_iters);
+[f, P1_env, ~, PLV_env, ~, ~, T_env] = helper.getSpectAverage(pos,neg, fs, subset, k_iters);
 t = (1:length(T_env))/fs;
 
 %% Get Peaks
@@ -113,5 +112,5 @@ end
 cd(data_out);
 fname = [subj,'_RAM_EFR_',char(string(fmod)), '_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
-save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
+save(fname,'t','T_env','f','PLV_env','PKS','LOCS', 'P1_env')
 cd(cwd)

@@ -2,8 +2,8 @@
 
 clear;
 
-subj = 'Q443';
-conditions = {'Baseline', 'Baseline', 'Baseline','Baseline','Baseline'};
+subj = 'Q430';
+conditions = {'Baseline', 'CA_2wksPost'};
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 
 uname = 'samhauser';
@@ -55,6 +55,7 @@ for k = 1:length(conditions)
     oaesum_all(k,:) = data.result.oae_summary;
     centerfreq_all(k,:) = data.result.centerFreqs;
     
+    theta(k,:) = data.res.theta; 
     cd(cwd)
     
 end
@@ -84,5 +85,11 @@ xticks([.5, 1, 2, 4, 8, 16])
 ylabel('Amplitude (dB EPL)', 'FontWeight', 'bold')
 xlabel('F Frequency (kHz)', 'FontWeight', 'bold')
 title(['SFOAE | ',subj], 'FontSize', 16);
+
+figure; 
+hold on;
+for k=1:length(conditions)
+    semilogx(f_all(k,:)*1e3, -(theta(k,:)-theta(k,end)), 'o', 'linew', 1.5, 'Color', colors{k})
+end
 
 cd(cwd)

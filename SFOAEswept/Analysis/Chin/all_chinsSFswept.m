@@ -2,8 +2,8 @@
 
 clear;
 
-chins = {'Q412', 'Q423', 'Q424', 'Q426', 'Q430', 'Q431', 'Q427', 'Q428'};
-group = {'TTS', 'TTS', 'TTS', 'TTS', 'CA', 'CA', 'PTS', 'PTS'};
+chins = {'Q412', 'Q423', 'Q424', 'Q426', 'Q430', 'Q431', 'Q427', 'Q428', 'Q425', 'Q421', 'Q440', 'Q441', 'Q443' };
+group = {'TTS', 'TTS', 'TTS', 'TTS', 'CA', 'CA', 'PTS', 'PTS', 'CA', 'CA', 'CA', 'CA', 'PTS'};
 
 location = 0; % 0 == mac, 1 == Desktop, 2 == SNAPlab
 

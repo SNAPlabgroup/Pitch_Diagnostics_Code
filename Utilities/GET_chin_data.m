@@ -1,8 +1,8 @@
 % Organize chin files
 clear;
 
-subj = 'Q441';
-gender = 'F';
+subj = 'Q450';
+gender = 'M';
 condition = 'Baseline';
 user = 'SH';
 loc = 0;

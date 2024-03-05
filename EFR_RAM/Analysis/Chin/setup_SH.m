@@ -4,7 +4,7 @@
 clear;
 
 condition = 'Baseline';
-subj = 'Q443';
+subj = 'Q421';
 loc = 0; 
 
 if loc == 1

@@ -42,11 +42,19 @@ freq = 10.^linspace(log10(200), log10(8000), 1024);
 MEMband = [500, 2000];
 ind = (freq >= MEMband(1)) & (freq <= MEMband(2));
 endsamps = ceil(stim.clickwin*stim.Fs*1e-3);
-delay = 0; 
+if exist(stim.nel)
+    if strcmp(string(stim.nel), 'NEL1')
+        delay = 25; 
+    end
+else 
+   delay = 0; 
+end
+goodTrials = any(squeeze(stim.resp(:,:,1,1)),1); 
+avgs = length(goodTrials(goodTrials==1)); 
 
 for k = 1:stim.nLevels
-   temp = reshape(squeeze(stim.resp(k, :, 2:end, 1+delay:endsamps+delay)),...
-      (stim.nreps-1)*stim.Averages, endsamps);
+   temp = reshape(squeeze(stim.resp(k, 1:avgs, 2:end, 1+delay:endsamps+delay)),...
+      (stim.nreps-1)*avgs, endsamps);
    resp(k, :) = trimmean(temp, 5, 1); %#ok<*SAGROW> % changed 20 to 5; maybe don't want to do AR or throw out 20% here...
    resp_freq(k, :) = pmtm(resp(k, :), 4, freq, stim.Fs);
    blevs = k;

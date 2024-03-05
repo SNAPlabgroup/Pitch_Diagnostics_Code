@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Enter info about new subject(s)
-subj = 'Q440';
+subj = 'Q450';
 conditions = {'Baseline'};
 user = 'SH';
 location = 0; % 0==laptop/mac; 1==work
