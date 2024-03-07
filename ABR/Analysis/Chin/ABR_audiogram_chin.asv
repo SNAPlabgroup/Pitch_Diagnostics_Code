@@ -174,32 +174,19 @@ end
 
 figure(abr_vis)
 subplot(ceil(length(freqs)/3),3,f+1);
-plot(freqs,thresh,'*-k','linewidth',2);
+plot(freqs,thresh,'*-k');
 grid on;
 xticks(freqs);
 set(gca,'xscale','log');
 yticks(0:10:80);
 ylim([0,80]);
-title('ABR-Audiogram');
-xlabel('Frequency (Hz)')
-ylabel('Threshold (dB SPL)');
-set(abr_vis,'Position',[411 105 1387 808])
-sgtitle(['ABR Waterfall |',subj,' ',condition])
 
 %% Save fig and export data to Processed
-
-if export
-    if ~isfolder("Processed")
-        mkdir("Processed")
-    end
-    
-    cd('Processed')
-    
-    print(abr_vis,[subj,'_',condition,'_ABR.png'],'-dpng','-r300');
-    abr_out.freqs = freqs;
-    abr_out.thresholds = thresh;
-    abr_out.subj = subj;
-    save([subj,'_',condition,'_ABR_Data.mat'],'abr_out');
+if ~isfolder("Processed")
 end
+cd('Processed')
 
-cd(pwd);
+
+abr_out.freqs = freqs;
+abr_out.thresholds = thresh;
+abr_out.subj = subj;

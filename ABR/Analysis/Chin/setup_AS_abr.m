@@ -8,6 +8,8 @@ set(0,'defaultfigurerenderer','painters')
 condition = 'Baseline';
 subj = 'Q450';
 
+export = 1;
+
 uname = 'sivaprakasaman';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 suffix = [condition,'/',subj];
