@@ -6,13 +6,25 @@
 close all;
 clear;
 
-subj = 'S363';
-condition = 'YNH';
+subj = 'S368';
+condition = 'HL';
+
+location = 0; 
+
+if location == 1 % School
+    prefix = 'F:\';
+elseif location == 2 % SNAPlab
+    prefix = 'E:\'; 
+elseif location == 0 % Mac
+    prefix = '/Volumes/SNH/';
+end 
 
 uname = 'samhauser';
-prefix = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/SFOAEswept/Human/'];
-suffix = [condition,'/',subj];
+
+suffix = ['THESIS', filesep, 'Pitch_Diagnostics_Data', filesep,...
+    'SFOAEswept', filesep, 'Human', filesep, condition,filesep,subj];
 datapath = [prefix,suffix];
+
 
 SFanalysis;
 

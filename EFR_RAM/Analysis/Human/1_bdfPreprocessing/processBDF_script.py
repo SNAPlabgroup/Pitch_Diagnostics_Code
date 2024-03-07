@@ -11,8 +11,8 @@ import os
 import sys
 import warnings
 
-subj = 'S343';
-cond = 'YNH';
+subj = 'S366';
+cond = 'HL';
 fmod = 223;
 EFR = 1; #change to 1 if you want to look at EFRs
 
@@ -77,7 +77,7 @@ os.chdir(pwd);
 # %matplotlib inline
 raw.plot(duration = 25.0, scalings = dict(eeg=80e-6), n_channels = 37);
 
-bad_chans = ['EXG3','EXG4','EXG5'];
+bad_chans = ['EXG3','EXG4','EXG5','A29']; #A29 bad for S366
 raw.drop_channels(bad_chans);
 raw.info
 

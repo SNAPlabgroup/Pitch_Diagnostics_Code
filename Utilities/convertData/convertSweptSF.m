@@ -22,6 +22,11 @@ data.info = info;
 data.stim = stim;
 data.resp = resp;
 
+
+p_cal_inv = dir(sprintf('p*_calib_FPL_inv%d.mat', info.FPL_file));
+y_inv = load(p_cal_inv.name, 'x'); 
+data.FPL_inv = y_inv.x; 
+
 p_cal = dir(sprintf('p%04.f_calib_FPL_raw.mat', info.FPL_file));
 y = load(p_cal.name, 'x'); 
 data.FPL = y.x; 

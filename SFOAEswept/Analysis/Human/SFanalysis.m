@@ -16,13 +16,21 @@ npoints = 512;
 %% Import data
 cwd = pwd;
 cd(datapath)
-datafile = {dir(fullfile(cd,['SFOAE_log_', subj, '*Ear*.mat'])).name};
-if length(datafile) > 1
-    fprintf('More than 1 data file. Check this is correct file!\n'); 
+datafile = dir(fullfile(cd,['SFOAEswept_', subj, '*.mat']));
+if length(datafile) < 1
+    fprintf('No file...Quitting!\n');
+elseif size(datafile,1) > 1
+    checkDIR =uigetfile('.mat');
+    load(checkDIR);
+    file = checkDIR; 
+else
+    load(datafile(1).name);
+    file = datafile(1).name; 
 end
-load(datafile{1});
-fname_out = [subj '_SFOAEswept_' datafile{1}(20:end-4) '.mat'];
 cd(cwd);
+
+stim = data.stim;
+resp = data.resp; 
 
 %% Set variables needed from stim.
 phiProbe_inst = 2*pi*stim.phiProbe_inst;
@@ -52,7 +60,7 @@ durs = .038*(2.^(-0.3*t_freq)-1)/ (-0.3*log(2)) + 0.038;
 %% Artifact rejection
 
 % Cancel out stimulus
-SFOAEtrials = stim.ProbeBuffs + stim.SuppBuffs - stim.BothBuffs;
+SFOAEtrials = resp.ProbeBuffs + resp.SuppBuffs - resp.BothBuffs;
 trials = size(SFOAEtrials,1);
 
 % high pass filter the response (can also be done on ER10X hardware)
@@ -118,8 +126,8 @@ end
 
 noise = [pos_noise; neg_noise];
 
-SFOAE = mean(resp_AR, "omitNaN"); % mean SFOAE after artifact rejection
-NOISE = mean(noise, "omitNaN"); % mean SFOAE after artifact rejection
+SFOAE = mean(resp_AR, 'omitNaN'); % mean SFOAE after artifact rejection
+NOISE = mean(noise, 'omitNaN'); % mean SFOAE after artifact rejection
 
 %% LSF Analysis
 
@@ -204,6 +212,163 @@ noise_complex2 = complex(a_n, b_n);
 noise_complex = mean(noise2,2);
 res.multiplier = stim.VoltageToPascal.* stim.PascalToLinearSPL;
 
+
+
+%% Windowing 
+%% Separating D and R components by IFFT
+% Code from IFFT method of separating D and R components from HB. 
+
+complex_sf_raw = oae_complex .* res.multiplier; 
+complex_nf_raw = noise_complex .* res.multiplier; 
+fs = stim.Fs; % Exact value doesn't matter, but simplest to match orig
+
+% Reconstruct time-domain response to 100 ms. Then the first 50 ms can be
+% used, with the recognition that part of the right half is negative time.
+% 50 ms should still be plenty for all OAE components to have come back
+% and the impulse response to have decayed to noise floor.
+timedur = 30e-3;
+
+% Check if 1/(frequency resolution) is long enough
+if 1/mean(abs(diff(testfreq))) < timedur/2
+    warning('Too few DPOAE points, aliasing  will likely  occur');
+end
+N = roundodd(timedur * fs);
+f = (0:(N-1))*fs/N; % FFT bin frequencies
+
+% Window the frequency domain response to avoid sharp edges while filling
+% in zeros for empty bins
+rampsamps = 8;
+ramp = hanning(2*rampsamps);
+complex_sf_ramp  = complex_sf_raw;
+complex_sf_ramp(1:rampsamps) = complex_sf_ramp(1:rampsamps)...
+    .*ramp(1:rampsamps);
+complex_sf_ramp((end-rampsamps+1):end) = ...
+    complex_sf_ramp((end-rampsamps+1):end).* ramp((end-rampsamps+1):end);
+
+complex_nf_ramp  = complex_nf_raw;              %same for nf
+complex_nf_ramp(1:rampsamps) = complex_nf_ramp(1:rampsamps)...
+    .*ramp(1:rampsamps);
+complex_nf_ramp((end-rampsamps+1):end) = ...
+    complex_nf_ramp((end-rampsamps+1):end).* ramp((end-rampsamps+1):end);
+
+% Fill in FFT bins from dp data
+FFT_sf =  interp1(testfreq, complex_sf_ramp, f);
+FFT_sf(isnan(FFT_sf)) = 0;
+
+FFT_nf =  interp1(testfreq, complex_nf_ramp, f); %same for nf
+FFT_nf(isnan(FFT_nf)) = 0;
+
+% First bin is f=0, then you have even number of bins
+% Need to take first half and conjugate mirror to fill other.
+Nhalf = (N-1)/2;
+nonzeroHalf_sf =  FFT_sf(2:(2+Nhalf-1));
+FFT_sf((Nhalf+2):end) = conj(nonzeroHalf_sf(end:-1:1));
+
+impulse_sf = ifftshift(ifft(FFT_sf));
+
+nonzeroHalf_nf =  FFT_nf(2:(2+Nhalf-1));           %same for nf
+FFT_nf((Nhalf+2):end) = conj(nonzeroHalf_nf(end:-1:1));
+
+impulse_nf = ifftshift(ifft(FFT_nf));
+
+% Make time vector: t=0 will be at the center owing to ifftshift
+t = (0:(N-1))/fs - timedur/2; % in milleseconds
+
+% Start a bit negative because D component has close to 0 delay and go to
+% half of the reconstructed duration (50 ms) as planned (just for plotting)
+t_min = -5e-3;
+t_max = 15e-3;
+inds_valid = t > t_min & t < t_max;
+impulse_sf = impulse_sf(inds_valid);
+t_sf = t(inds_valid);
+
+impulse_nf = impulse_nf(inds_valid);                %same for nf
+
+% Plot envelope of impulse response to see if there are two peaks, with the
+% notch between peaks being somewhere in the 1-5 ms range.
+figure(40);
+impulse_sf_env = abs(hilbert(impulse_sf));
+impulse_nf_env = abs(hilbert(impulse_nf)); 
+plot(t_sf*1e3,  impulse_sf_env, 'linew', 2);
+hold on; 
+plot(t_sf*1e3, impulse_nf_env, 'linew', 2)
+xlim([t_min*1e3, 20]);
+xlabel('Time (ms)', 'FontSize', 16);
+ylabel('Impulse Response Envelope', 'FontSize', 16);
+set(gca, 'FontSize', 16);
+title('IFFT method',  'FontSize', 16);
+
+% Do windowing of signals
+% % Start with  hard windows (box) and then smooth edges by 0.5 ms
+% smoothing_kernel = blackman(ceil(0.5e-3*fs));
+% smoothing_kernel  = smoothing_kernel / sum(smoothing_kernel);
+
+win_min = 0; %seconds   Window to take as primary component, less reflections
+win_max = 15e-3; 
+
+t_sf_clean = t_sf.*(t_sf <= win_max & t_sf >= win_min); 
+impulse_sf_clean = impulse_sf.*(t_sf <= win_max & t_sf >= win_min); 
+impulse_nf_clean = impulse_nf.*(t_sf <= win_max & t_sf >= win_min); 
+
+% Error using conv2
+% First and second arguments must be single or double.
+% original code (which works elsewhere?) 
+% win_D_only = conv(t_dp < D_only_dur, smoothing_kernel, 'same');
+% win_R_only = conv(t_dp > D_only_dur, smoothing_kernel, 'same');
+
+% trying the following to solve problem: 
+% t_dp_D_only = t_sf.*(t_sf < D_only_dur); 
+% t_dp_R_only = t_sf.*(t_sf > D_only_dur); 
+% win_D_only = conv(t_dp_D_only, smoothing_kernel, 'same');
+% win_R_only = conv(t_dp_R_only, smoothing_kernel, 'same');
+
+% impulse_dp_D_only = impulse_sf .* win_D_only;
+% impulse_dp_R_only = impulse_sf .* win_R_only;
+
+complex_sf_allbins = fft(impulse_sf_clean);
+f_complex_sf_allbins = (0:(numel(impulse_sf_clean)-1)) ...
+    * fs/numel(impulse_sf_clean);
+phasor_tmin_correction = ...
+    exp(1j*2*pi*f_complex_sf_allbins*abs(t_min));
+complex_sf_allbins_corrected = complex_sf_allbins ...
+    .* phasor_tmin_correction;
+complex_sf_IFFT = interp1(f_complex_sf_allbins,...
+    complex_sf_allbins_corrected, testfreq);
+
+complex_nf_allbins = fft(impulse_nf_clean);         %same for noise floor
+f_complex_nf_allbins = (0:(numel(impulse_nf_clean)-1)) ...
+    * fs/numel(impulse_nf_clean);
+phasor_tmin_correction = ...
+    exp(1j*2*pi*f_complex_nf_allbins*abs(t_min));
+complex_nf_allbins_corrected = complex_nf_allbins ...
+    .* phasor_tmin_correction;
+complex_nf_IFFT = interp1(f_complex_nf_allbins,...
+    complex_nf_allbins_corrected, testfreq);
+
+
+
+%% Plot resulting figure (in SPL) // IFFT method
+figure;
+semilogx(testfreq/1000, db(abs(oae_complex).*res.multiplier), 'linew', 2);
+hold on;
+semilogx(testfreq/1000, db(abs(complex_sf_IFFT)), 'linew', 2);
+hold on;
+plot(testfreq/1000, db(abs(noise_complex).*res.multiplier), 'linew', 1.5);
+plot(testfreq/1000, db(abs(complex_nf_IFFT)), '--', 'linew', 2)
+title([subj, ' | SFOAE | ', condition], 'FontSize', 14 )
+set(gca, 'XScale', 'log', 'FontSize', 14)
+xlim([.5, 16])
+xticks([.5, 1, 2, 4, 8, 16])
+xlabel('Frequency (kHz)','FontWeight','bold')
+ylabel('Amplitude (dB SPL)','FontWeight','bold')
+legend('SFOAE', 'IFFTcleaned', 'NF', 'clean NF')
+
+
+
+
+
+
+
 %% Plot resulting figure
 figure;
 plot(testfreq/1000, db(abs(oae_complex).*res.multiplier), 'linew', 1.75);
@@ -223,7 +388,7 @@ if subj(1) == 'S'
     calib1 = 0; 
     calib2 = 0; 
     % find calib file
-    calibdir = ['/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/FPLcalib/Human/' condition '/' subj];
+    calibdir = [prefix '/THESIS/Pitch_Diagnostics_Data/FPLcalib/Human/' condition '/' subj];
     cd(calibdir)
     
     checkDIR=dir(sprintf('Calib_Ph1ER-10X_%s*.mat', subj));

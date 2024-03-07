@@ -19,14 +19,25 @@ frames = round(t_win*fs);
 
 %% Import data
 cwd = pwd;
+
 cd(datapath)
-datafile = {dir(fullfile(cd, file)).name};
-load(datafile{1});
-fname_out = [datafile{1}(1:end-4),'_matlab.mat'];
+datafile = dir(fullfile(cd,['*/p*.mat']));
+cd(datafile(1).folder)
+if length(datafile) < 1
+    fprintf('No file...Quitting!\n');
+elseif size(datafile,1) > 1
+    checkDIR =uigetfile('.mat');
+    load(checkDIR);
+    file = checkDIR; 
+else
+    load(datafile(1).name);
+    file = datafile(1).name; 
+end
+
+fname_out = [file(1:end-4),'_matlab.mat'];
 cd(cwd);
 %% Data analysis & plotting:
 fs_orig = data.Stimuli.RPsamprate_Hz;
-fs = 8e3; %resample to 8kHz
 
 all_dat = cell2mat(data.AD_Data.AD_All_V{1,1}');
 all_dat = all_dat';
@@ -47,7 +58,7 @@ subset = 100;
 k_iters = 30;
 
 %only output things we want to look at
-[f, ~, ~, PLV_env, ~, ~, T_env] = helper.getSpectAverage(pos,neg, fs, subset, k_iters);
+[f, P1_env, ~, PLV_env, ~, ~, T_env] = helper.getSpectAverage(pos,neg, fs, subset, k_iters);
 t = (1:length(T_env))/fs;
 
 %% Get Peaks
@@ -91,7 +102,7 @@ set(gcf,'Position',[1557 538 560 420])
 
 %% Export:
 
-suffix2 = [condition,'/',subj,'/Preprocessed'];
+suffix2 = [condition,'/',subj,'/Processed'];
 
 data_out = [prefix,suffix2];
 if ~exist(data_out,'dir')
@@ -99,7 +110,7 @@ if ~exist(data_out,'dir')
 end
 
 cd(data_out);
-fname = [subj,'_RAM_efr_chin_',fmod, '_',condition];
+fname = [subj,'_RAM_EFR_',char(string(fmod)), '_',condition];
 print(gcf,[fname,'_figure'],'-dpng','-r300');
-save(fname,'t','T_env','f','PLV_env','PKS','LOCS')
+save(fname,'t','T_env','f','PLV_env','PKS','LOCS', 'P1_env')
 cd(cwd)

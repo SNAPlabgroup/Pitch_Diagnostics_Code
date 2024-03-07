@@ -1,6 +1,9 @@
 %% MEMR by level helper function
 
-function [res] = MEMRbyLevel(stim)
+function [res] = MEMRbyLevel(data)
+
+stim = data.stim; 
+resp = data.resp.AllBuffs; 
 
 freq = linspace(200, 8000, 1024);
 MEMband = [500, 2000];
@@ -10,13 +13,13 @@ endsamps = ceil(stim.clickwin*stim.Fs*1e-3);
 
 for k = 1:stim.nLevels
     fprintf(1, 'Analyzing level # %d / %d ...\n', k, stim.nLevels);
-    temp = reshape(squeeze(stim.resp(k, :, 2:end, 1:endsamps)),...
+    temp = reshape(squeeze(resp(k, :, 2:end, 1:endsamps)),...
         (stim.nreps-1)*stim.Averages, endsamps);
     tempf = pmtm(temp', 4, freq, stim.Fs)';
     resp_freq(k, :) = median(tempf, 1); %#ok<*SAGROW>
     
     blevs = k; % Which levels to use as baseline (consider 1:k)
-    temp2 = squeeze(stim.resp(blevs, :, 1, 1:endsamps));
+    temp2 = squeeze(resp(blevs, :, 1, 1:endsamps));
     
     if(numel(blevs) > 1)
         temp2 = reshape(temp2, size(temp2, 2)*numel(blevs), endsamps);
