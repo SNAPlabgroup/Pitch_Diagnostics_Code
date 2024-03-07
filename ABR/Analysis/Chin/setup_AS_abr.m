@@ -3,10 +3,12 @@
 close all;
 clear;
 
-condition = 'CA_2wksPost';
-subj = 'Q431';
+set(0,'defaultfigurerenderer','painters')
 
-uname = 'asivapr';
+condition = 'Baseline';
+subj = 'Q450';
+
+uname = 'sivaprakasaman';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 suffix = [condition,'/',subj];
 datapath = [prefix,suffix];

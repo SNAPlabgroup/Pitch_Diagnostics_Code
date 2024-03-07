@@ -137,7 +137,7 @@ for f = 1:length(freqs)
 
     figure(abr_vis);
     subplot(ceil(length(freqs)/3),3,f);
-    buff = 1.5*max(max(wforms))*(1:size(wforms,2));
+    buff = 1.25*max(max(wforms))*(1:size(wforms,2));
     wform_plot = wforms+buff;
     
     t = (1:size(wforms,1))/fs;
