@@ -1,9 +1,12 @@
 %Author (s): Andrew Sivaprakasam
 %Last Updated: Februrary, 2024
 %Description: Script to estimate and process ABR thresholds based on bootstrapped
-%cross-corelation (based on Luke Shaheen ARO2024 presentation)
+%cross-corelation (loosely-based on Luke Shaheen ARO2024 presentation)
 
-addpath(pwd);
+close all;
+
+cwd = pwd;
+addpath(cwd);
 
 fs = 8e3; %resampled to 8e3
 samps = 400;
@@ -37,7 +40,10 @@ ft = fittype(sigmoid,'options',fops);
 % fit_vis = tiledlayout(ceil(length(freqs)/3),3)
 
 abr_vis = figure();
+set(abr_vis,'Position',[411 105 1387 808])
+
 fit_vis = figure();
+set(fit_vis,'Position',[7 485 809 474])
 
 for f = 1:length(freqs)
 
@@ -112,7 +118,7 @@ for f = 1:length(freqs)
     cor_temp = cor_temp(I);
     
     cor_temp = cor_temp/max(cor_temp); %normalize
-    cor_fit = fit(lev', cor_temp',ft)
+    cor_fit = fit(lev', cor_temp',ft);
 
     %Threshold estimate is the transition point of the sigmoid: 
 %     thresh(f) = cor_fit.c;
@@ -183,7 +189,6 @@ ylim([0,80]);
 title('ABR-Audiogram');
 xlabel('Frequency (Hz)')
 ylabel('Threshold (dB SPL)');
-set(abr_vis,'Position',[411 105 1387 808])
 sgtitle(['ABR Waterfall |',subj,' ',condition])
 
 %% Save fig and export data to Processed
@@ -202,4 +207,4 @@ if export
     save([subj,'_',condition,'_ABR_Data.mat'],'abr_out');
 end
 
-cd(pwd);
+cd(cwd);

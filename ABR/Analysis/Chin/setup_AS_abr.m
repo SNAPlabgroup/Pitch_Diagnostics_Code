@@ -3,10 +3,10 @@
 close all;
 clear;
 
-set(0,'defaultfigurerenderer','painters')
+set(0,'defaultfigurerenderer','opengl')
 
 condition = 'Baseline';
-subj = 'Q450';
+subj = 'Q428';
 
 export = 1;
 
@@ -17,6 +17,7 @@ datapath = [prefix,suffix];
 
 freqs = [500,1e3,2e3,4e3,8e3];
 % freqs = [8000];
+
 ABR_audiogram_chin;
 
 
