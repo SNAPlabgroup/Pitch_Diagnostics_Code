@@ -7,8 +7,12 @@ chin = []; % placeholder in case we want to only plot one chins data
 thresholds = [1 2 3 4 5]; % placeholder while not loading real data
 
 % Directories for individual user // currently for SH
-datadir = '/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/ABR/Chin/';
+% datadir = '/Volumes/SNH/THESIS/Pitch_Diagnostics_Data/ABR/Chin/';
+uname = 'sivaprakasaman';
+datadir = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 cd([datadir, filesep, 'Baseline'])
+set(0,'DefaultFigureRenderer','painters')
+
 
 if isempty(chin)
     all_chins = dir('Q*');
@@ -47,31 +51,39 @@ for k = 1:numel(all_chins)
     
     % Get Baseline data
     cd([all_chins(k).folder,filesep, chin, filesep, 'Processed'])
-    % load(XXX);
-    baseline(k,:) = 10*rand(1,5); %thresholds;
+    cond = 'Baseline';
+    load([all_chins(k).name,'_',cond,'_ABR_Data.mat']);
+    freq = abr_out.freqs/1e3; %converted to kHz
+    baseline(k,:) = abr_out.thresholds;
     
     cd(datadir);
     emptyFlag = 0;
     if sum(strcmp(chin, tts_chins)>0)
         cd(fullfile('TTS_2wksPost', chin, 'Processed'))
+        cond = 'TTS_2wksPost';
         exp{k,1} = 'TTS';
     elseif sum(strcmp(chin, pts_chins)>0)
         cd(fullfile('PTS_2wksPost', chin, 'Processed'))
+        cond = 'PTS_2wksPost';
         exp{k,1} = 'PTS';
     elseif sum(strcmp(chin, ca_chins)>0)
         cd(fullfile('CA_2wksPost', chin, 'Processed'))
+        cond = 'CA_2wksPost';
         exp{k,1} = 'CA';
     elseif sum(strcmp(chin, ge_chins)>0)
         cd(fullfile('GE_2wksPost', chin, 'Processed'))
+        cond = 'GE_2wksPost';
         exp{k,1} = 'GE';
     else
         exp{k,1} = 'NA';
+        cond = 'Baseline';
         emptyFlag = 1;
     end
     
+    %TODO handle missing pre/post data.
     if ~emptyFlag
-        %load(XXX)
-        post(k,:) = 20*rand(1,5); %thresholds;
+        load([all_chins(k).name,'_',cond,'_ABR_Data.mat'])
+        post(k,:) = abr_out.thresholds;
     end
     
 end
@@ -198,7 +210,68 @@ end
     title('Gentamicin', 'FontSize', 24, 'Color', gre);
     grid on;
     
-    
+%% Mean Plots
+
+CA_inds = find(strcmp(exp,'CA'));
+ca_mean = [mean(baseline(CA_inds,:))',mean(post(CA_inds,:))']; %col1 pre col2 post
+ca_std= [std(baseline(CA_inds,:))',std(post(CA_inds,:))'];
+
+TTS_inds = find(strcmp(exp,'TTS'));
+tts_mean = [mean(baseline(TTS_inds,:))',mean(post(TTS_inds,:))']; 
+tts_std= [std(baseline(TTS_inds,:))',std(post(TTS_inds,:))'];
+
+PTS_inds = find(strcmp(exp,'PTS'));
+pts_mean = [mean(baseline(PTS_inds,:))',mean(post(PTS_inds,:))']; 
+pts_std= [std(baseline(PTS_inds,:))',std(post(PTS_inds,:))'];
+
+%Plot
+figure;
+subplot(2,2,1);
+hold on
+errorbar(freq,tts_mean(:,1),tts_std(:,1),'o-','color',blck,'LineWidth',2.5)
+errorbar(freq,tts_mean(:,2),tts_std(:,2),'o-','color',rd,'LineWidth',2.5)
+hold off
+xticks(freq);
+yticks(0:10:100);
+xlabel('Frequency (kHz)');
+ylabel('Threshold (dB SPL)');
+xlim([.4,10]);
+set(gca,'XScale','log');
+title('Synaptopathy','color',rd)
+grid on
+
+
+subplot(2,2,3);
+hold on
+errorbar(freq,ca_mean(:,1),ca_std(:,1),'o-','color',blck,'LineWidth',2.5)
+errorbar(freq,ca_mean(:,2),ca_std(:,2),'o-','color',blu,'LineWidth',2.5)
+hold off
+xticks(freq);
+yticks(0:10:100);
+xlabel('Frequency (kHz)');
+ylabel('Threshold (dB SPL)');
+xlim([.4,10]);
+set(gca,'XScale','log');
+title('IHC Damage','color',blu)
+grid on
+
+subplot(2,2,2);
+hold on
+errorbar(freq,pts_mean(:,1),pts_std(:,1),'o-','color',blck,'LineWidth',2.5)
+errorbar(freq,pts_mean(:,2),pts_std(:,2),'o-','color',yel,'LineWidth',2.5)
+hold off
+xticks(freq);
+yticks(0:10:100);
+xlabel('Frequency (kHz)');
+ylabel('Threshold (dB SPL)');
+xlim([.4,10]);
+set(gca,'XScale','log');
+title('Complex SNHL','color',yel)
+grid on
+
+set(gcf,'Position',[675 240 1012 725])
+
+%%
 
 % %%
 % cd 'Figures'

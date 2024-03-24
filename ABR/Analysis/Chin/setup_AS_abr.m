@@ -6,7 +6,7 @@ clear;
 set(0,'defaultfigurerenderer','opengl')
 
 condition = 'Baseline';
-subj = 'Q428';
+subj = 'Q425';
 
 export = 1;
 
