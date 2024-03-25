@@ -6,11 +6,11 @@ clear;
 set(0,'defaultfigurerenderer','opengl')
 
 condition = 'Baseline';
-subj = 'Q425';
+subj = 'Q455';
 
 export = 1;
 
-uname = 'sivaprakasaman';
+uname = 'asivapr';
 prefix = ['/media/',uname,'/AndrewNVME/Pitch_Study/Pitch_Diagnostics_SH_AS/ABR/Chin/'];
 suffix = [condition,'/',subj];
 datapath = [prefix,suffix];

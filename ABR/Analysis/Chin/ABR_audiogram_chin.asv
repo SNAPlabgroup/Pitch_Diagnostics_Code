@@ -1,9 +1,12 @@
 %Author (s): Andrew Sivaprakasam
 %Last Updated: Februrary, 2024
 %Description: Script to estimate and process ABR thresholds based on bootstrapped
-%cross-corelation (based on Luke Shaheen ARO2024 presentation)
+%cross-corelation (loosely-based on Luke Shaheen ARO2024 presentation)
 
-addpath(pwd);
+close all;
+
+cwd = pwd;
+addpath(cwd);
 
 fs = 8e3; %resampled to 8e3
 samps = 400;
@@ -37,7 +40,10 @@ ft = fittype(sigmoid,'options',fops);
 % fit_vis = tiledlayout(ceil(length(freqs)/3),3)
 
 abr_vis = figure();
+set(abr_vis,'Position',[411 105 1387 808])
+
 fit_vis = figure();
+set(fit_vis,'Position',[7 485 809 474])
 
 for f = 1:length(freqs)
 
@@ -111,8 +117,11 @@ for f = 1:length(freqs)
     wforms = wforms(:,I);
     cor_temp = cor_temp(I);
     
+    
+    %Set minimum 
+    
     cor_temp = cor_temp/max(cor_temp); %normalize
-    cor_fit = fit(lev', cor_temp',ft)
+    cor_fit = fit(lev', cor_temp',ft);
 
     %Threshold estimate is the transition point of the sigmoid: 
 %     thresh(f) = cor_fit.c;
@@ -174,19 +183,31 @@ end
 
 figure(abr_vis)
 subplot(ceil(length(freqs)/3),3,f+1);
-plot(freqs,thresh,'*-k');
+plot(freqs,thresh,'*-k','linewidth',2);
 grid on;
 xticks(freqs);
 set(gca,'xscale','log');
 yticks(0:10:80);
 ylim([0,80]);
+title('ABR-Audiogram');
+xlabel('Frequency (Hz)')
+ylabel('Threshold (dB SPL)');
+sgtitle(['ABR Waterfall |',subj,' ',condition])
 
 %% Save fig and export data to Processed
-if ~isfolder("Processed")
+
+if export
+    if ~isfolder("Processed")
+        mkdir("Processed")
+    end
+    
+    cd('Processed')
+    
+    print(abr_vis,[subj,'_',condition,'_ABR.png'],'-dpng','-r300');
+    abr_out.freqs = freqs;
+    abr_out.thresholds = thresh;
+    abr_out.subj = subj;
+    save([subj,'_',condition,'_ABR_Data.mat'],'abr_out');
 end
-cd('Processed')
 
-
-abr_out.freqs = freqs;
-abr_out.thresholds = thresh;
-abr_out.subj = subj;
+cd(cwd);

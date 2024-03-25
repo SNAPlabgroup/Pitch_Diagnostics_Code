@@ -117,6 +117,11 @@ for f = 1:length(freqs)
     wforms = wforms(:,I);
     cor_temp = cor_temp(I);
     
+    
+    %Set minimum of sigmoid to lowest level recorded
+    fops = fitoptions('Method','NonLinearLeastSquares','Lower',[-inf, 0, min(lev), 0],'Upper',[1, inf, 100, inf],'StartPoint',startPoints);
+    ft = fittype(sigmoid,'options',fops);
+    
     cor_temp = cor_temp/max(cor_temp); %normalize
     cor_fit = fit(lev', cor_temp',ft);
 
@@ -168,9 +173,9 @@ for f = 1:length(freqs)
     errorbar(lev,cor_temp,cor_err_temp,'.b','linewidth',1.5,'markersize',10);
     ylim([0,1])
     xline(thresh(f),'r','linewidth',2);
-    xticks(0:10:80);
+    xticks(0:10:100);
     xtickangle(90);
-    xlim([0,80]);
+    xlim([0,100]);
     xlabel('Level (dB SPL)');
     hold off
     grid on
@@ -184,8 +189,8 @@ plot(freqs,thresh,'*-k','linewidth',2);
 grid on;
 xticks(freqs);
 set(gca,'xscale','log');
-yticks(0:10:80);
-ylim([0,80]);
+yticks(0:10:100);
+ylim([0,100]);
 title('ABR-Audiogram');
 xlabel('Frequency (Hz)')
 ylabel('Threshold (dB SPL)');
